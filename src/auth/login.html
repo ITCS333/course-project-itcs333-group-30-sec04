@@ -25,7 +25,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
 
 </head>
-<body <!-- TODO: Add any styling to the 'body' tag to center the login form on the page. -->>
+<body> <!-- TODO: Add any styling to the 'body' tag to center the login form on the page. -->>
 
     <!-- This will be the main content area of the page. -->
     <!-- TODO: Use the 'main' element to contain the login form, as it represents the primary content of the document. -->
@@ -33,13 +33,13 @@
         <!-- This 'section' groups the related content of the login form. -->
         <!-- TODO: Create a 'section' element to act as the login card. -->
 <section style="background:white; padding:2rem; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); width:100%; max-width:390px;">
-            <!-- The heading of the login form -->
+            <!-- The heading of the login form --> 
             <!-- TODO: Add a heading element (e.g., 'h1' or 'h2') for the form's title. The text should be "Welcome Back!". -->
 <h2 style="text-align:center;">Welcome Back!</h2>
 
             <!-- The form element will wrap all the inputs. -->
             <!-- TODO: Create a 'form' element. The 'action' can be '#' for now. -->
-<form action="#">
+<form id="login-form" action="#"> <!-- i add login form becose it need in js-->
                 <!-- TODO: Use a 'fieldset' to group all the related controls for the login form. -->
                 <fieldset>
                     <!-- TODO: Add a 'legend' to caption the fieldset. e.g., "Secure Login". This improves accessibility. -->
@@ -54,8 +54,8 @@
                     <!-- TODO: Add an 'input' field for the email.
                          - The type should be "email".
                          - The id must be "email".
-                         - It should be a required field. -->
-<input type="email" id="email" required placeholder="you@example.com">
+                         - It should be a required field. (placeholder="you@example.com")-->
+<input type="email" id="email" required >
 
                     <!-- TODO: Add a 'label' for the password input field.
                          The 'for' attribute should be "password".
@@ -79,6 +79,9 @@
 
                 <!-- End of the fieldset. -->
 </fieldset>
+<div id="message-container">
+
+</div>
 
             <!-- End of the form element. -->
 
@@ -87,6 +90,7 @@
 </section>
     <!-- End of the main content area. -->
 </main>
+<script src="login.js" defer></script>
 </body>
 </html>
 

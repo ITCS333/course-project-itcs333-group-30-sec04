@@ -11,12 +11,12 @@
 // TODO: Start a PHP session using session_start()
 // This must be called before any output is sent to the browser
 // Sessions allow us to store user data across multiple pages
-
+session_start();
 
 // --- Set Response Headers ---
 // TODO: Set the Content-Type header to 'application/json'
 // This tells the browser that we're sending JSON data back
-
+header("Content-Type:application/json");
 
 // TODO: (Optional) Set CORS headers if your frontend and backend are on different domains
 // You'll need headers for Access-Control-Allow-Origin, Methods, and Headers
@@ -26,7 +26,13 @@
 // TODO: Verify that the request method is POST
 // Use the $_SERVER superglobal to check the REQUEST_METHOD
 // If the request is not POST, return an error response and exit
-
+if ($_SERVER["REQUEST_METHOD"] !=="POST"){
+    echo json_encode([
+        "status" => "error",
+         "massage" => "Invalid request method. POST required."
+         ]);
+    exit;
+}
 
 // --- Get POST Data ---
 // TODO: Retrieve the raw POST data
