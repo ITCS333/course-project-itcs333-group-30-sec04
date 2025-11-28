@@ -1,44 +1,69 @@
-<!--
-  Requirement: Create the Student View for the Weekly Breakdown
+   <!--
+   Requirement: Create the Student View for the Weekly Breakdown
 
-  Instructions:
-  This page is a read-only view for students to see the plan for all weeks.
-  Each week should link to its dedicated detail page.
--->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- TODO: Add meta tags for charset and viewport. -->
-    
-    <!-- TODO: Add a title, e.g., "Weekly Course Breakdown". -->
+   Instructions:
+   This page is a read-only view for students to see the plan for all weeks.
+   Each week should link to its dedicated detail page.
+   -->
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+      <!-- TODO: Add meta tags for charset and viewport. -->
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- TODO: Link to your CSS framework or stylesheet. -->
-</head>
-<body>
+      <!-- TODO: Add a title, e.g., "Weekly Course Breakdown". -->
+      <title>Weekly Course Breakdown</title>
 
-    <!-- TODO: Create a 'header' with a main heading ('h1') "Weekly Course Breakdown". -->
+      <!-- TODO: Link to your CSS framework or stylesheet. -->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@latest/css/pico.classless.min.css">
 
-    <!-- TODO: Create the 'main' content area. -->
-        <!-- TODO: Create a 'section' to contain the list of weeks. -->
-            <!-- TODO: Add 2-3 dummy weekly entries using the structure below. -->
+   </head>
+   <body>
 
-            <!-- Example Week 1: -->
-            <!-- TODO: Use an 'article' element for each week to group its content semantically. -->
-                <!-- TODO: Add a heading ('h2') for the week's title (e.g., "Week 1: Introduction to HTML"). -->
-                <!-- TODO: Add a paragraph ('p') to display the start date, e.g., "Starts on: YYYY-MM-DD". -->
-                <!-- TODO: Add a paragraph ('p') for a brief description of the week. -->
-                <!-- TODO: Add an anchor tag ('a') that links to the detail page. 
-                     - For now, the 'href' can be "week-detail.html".
-                     - The link text should be "View Details & Discussion". -->
-            <!-- End of article. -->
+      <!-- TODO: Create a 'header' with a main heading ('h1') "Weekly Course Breakdown". -->
+      <header>
+         <h1>Weekly Course Breakdown</h1>
+      </header>
 
-            <!-- Example Week 2: -->
-            <!-- TODO: Create a second 'article' for another week. -->
-                <!-- TODO: Add a heading, a paragraph for the start date, a paragraph for the description, and an anchor tag linking to "week-detail.html". -->
-            <!-- End of article. -->
+      <!-- TODO: Create the 'main' content area. -->
+      <main>
+         <!-- TODO: Create a 'section' to contain the list of weeks. -->
+            <section id="week-list-section">
+               <!-- TODO: Add 2-3 dummy weekly entries using the structure below. -->
 
-        <!-- End of weekly list section. -->
-    <!-- End of main. -->
+               <!-- Example Week 1: -->
+               <!-- TODO: Use an 'article' element for each week to group its content semantically. -->
+               <article>
+                  <!-- TODO: Add a heading ('h2') for the week's title (e.g., "Week 1: Introduction to HTML"). -->
+                  <h2>Week 1: Introduction to HTML</h2>
+                  <!-- TODO: Add a paragraph ('p') to display the start date, e.g., "Starts on: YYYY-MM-DD". -->
+                  <p>Starts on: YYYY-MM-DD</p>
+                  <!-- TODO: Add a paragraph ('p') for a brief description of the week. -->
+                  <p>description:</p>
+                  <!-- TODO: Add an anchor tag ('a') that links to the detail page. 
+                        - For now, the 'href' can be "week-detail.html".
+                        - The link text should be "View Details & Discussion". -->
+                        <a href="details.html">View Details & Discussion</a>
+               <!-- End of article. -->
+               </article>
 
-</body>
-</html>
+               <!-- Example Week 2: -->
+               <!-- TODO: Create a second 'article' for another week. -->
+               <article>
+                  <!-- TODO: Add a heading, a paragraph for the start date, a paragraph for the description, and an anchor tag linking to "week-detail.html". -->
+                     <h2>Week 2: Introduction to CSS</h2>
+                     <p> Starts on: YYYY-MM-DD</p>
+                     <p> description:</p>
+                     <a href="details.html">View Details & Discussion</a>
+               <!-- End of article. -->
+               </article>
+
+         <!-- End of weekly list section. -->
+            </section>
+      <!-- End of main. -->
+      </main>
+      <script src="list.js" defer></script>
+
+   </body>
+   </html>
