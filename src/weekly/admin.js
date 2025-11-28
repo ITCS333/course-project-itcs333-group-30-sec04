@@ -177,4 +177,4 @@
 // --- Initial Page Load ---
 // Call the main async function to start the application.
   loadAndInitialize();
-  console.log(loadAndInitialize());
+  
