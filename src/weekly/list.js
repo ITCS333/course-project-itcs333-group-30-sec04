@@ -70,7 +70,7 @@
 
       listSection.innerHTML="";
 
-      listWeek.array.forEach(element => { 
+      listWeek.forEach(element => { 
         const weekArticle=createWeekArticle(element);
         listSection.appendChild(weekArticle);
       });
