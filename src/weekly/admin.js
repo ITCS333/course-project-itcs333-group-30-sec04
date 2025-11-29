@@ -39,6 +39,7 @@
   
   // ... your implementation here ...
    const newtr= document.createElement("tr");
+   newtr.dataset.weekId= week.id;
 
    const titletd= document.createElement("td");
    titletd.textContent= week.title;
@@ -46,10 +47,12 @@
 
    const descrtd=document.createElement("td");
    descrtd.textContent=week.description;
+   descrtd.title= week.description; // to shoe full text on hover
    newtr.appendChild(descrtd);
 
   //td button
-   let tdbutton=document.createElement("td");
+   const tdbutton=document.createElement("td");
+   
  
   //edit button
    const editBtn= document.createElement("button")
@@ -105,25 +108,31 @@
   function handleAddWeek(event){
   // ... your implementation here ...
     event.preventDefault();
+
     const title= document.getElementById("week-title").value;
     const startDate= document.getElementById("week-start-date").value;
     const description= document.getElementById("week-description").value;
-    
 
     const weekLinks= document.getElementById("week-links").value;
-    const linkArray= weekLinks.split("\n");//.filter(line => line.trim() !="");
-  //the objesct week that has the id, title, date, description, weekLinks 
-  const newWeekobj={
-    id:`week_${Date.now()}`,
-    title: title,
-    startDate: startDate,
-    description: description,
-    weekLinks:linkArray
-  };
+    const linkArray= weekLinks.split("\n").filter(link => link.trim() !="");
+  
+    const newWeekobj={
+      id:`week_${Date.now()}`,
+      title: title,
+      startDate: startDate,
+      description: description,
+      weekLinks:linkArray
+    };
+    // Get current weeks from localStorage
+    //weeks = JSON.parse(localStorage.getItem("weeksData")) || [];
 
-    weeks.push(newWeekobj); //stores the week object in weeks that is array that will hold the weekly data loaded from the JSON
+    weeks.push(newWeekobj);
+    // Save updated weeks to localStorage
+    localStorage.setItem("weeksData", JSON.stringify(weeks));
+    
     renderTable();
     weekForm.reset();
+    showMessage('Week added successfully', 'success');
   }
 
 /**
@@ -141,8 +150,12 @@
 
     if(event.target.classList.contains("delete-btn")) {
       const weekId = event.target.dataset.id; 
-      weeks=weeks.filter(week => week.id != weekId);
-      renderTable();
+      if(confirm('Are you sure you want to delete this week?')){
+        weeks=weeks.filter(week => week.id != weekId);
+        localStorage.setItem("weeksData", JSON.stringify(weeks)); // <-- update storage
+        renderTable();
+        showMessage('Week deleted successfully!', 'success');
+      }  
     
     }
   
@@ -160,13 +173,24 @@
  */
   async function loadAndInitialize() {
   // ... your implementation here ...
+
     try{
-      const response= await fetch('weeks.json');
-      const result= await response.json();
-      weeks= result;
+      let storedWeeks = JSON.parse(localStorage.getItem("weeksData"));
+      
+      if(storedWeeks){
+        weeks=storedWeeks
+      }
+      else{
+        const response= await fetch('api/weeks.json');
+        weeks= await response.json();
+        localStorage.setItem("weeksData", JSON.stringify(weeks));
+      }
+
+      //console.log("Loaded weeks:", result);
       renderTable();
       weekForm.addEventListener('submit', handleAddWeek);
-      weekTbody.addEventListener('click',handleTableClick);
+      weekTbody.addEventListener('click', handleTableClick);
+     
     }
     catch(error){
       console.log('Error:', error); 
@@ -177,4 +201,3 @@
 // --- Initial Page Load ---
 // Call the main async function to start the application.
   loadAndInitialize();
-  

@@ -24,76 +24,77 @@
      <!-- TODO: Create the 'main' content area. -->
           <main>
 
-          <!-- Section 1: Weekly Information -->
-          <!-- TODO: Use an 'article' to display the main weekly information. -->
-          <article>
-               <!-- TODO: Add a paragraph ('p') to display the start date, e.g., "Starts on: YYYY-MM-DD". -->
-               <p id="week-start-date">Starts on: YYYY-MM-DD</p>
-               <!-- TODO: Add a sub-heading ('h2') "Description & Notes". -->
-               <h2>Description & Notes</h2>
-               <!-- TODO: Add a paragraph ('p') with dummy text for the week's detailed notes. -->
-               <p id="week-description"> This week we will explian everything related to html, then we will practice projects together </p>
+               <!-- Section 1: Weekly Information -->
+               <!-- TODO: Use an 'article' to display the main weekly information. -->
+               <article>
+                    <!-- TODO: Add a paragraph ('p') to display the start date, e.g., "Starts on: YYYY-MM-DD". -->
+                    <p id="week-start-date">Starts on: YYYY-MM-DD</p>
+                    <!-- TODO: Add a sub-heading ('h2') "Description & Notes". -->
+                    <h2>Description & Notes</h2>
+                    <!-- TODO: Add a paragraph ('p') with dummy text for the week's detailed notes. -->
+                    <p id="week-description"></p>
 
-               <!-- TODO: Add another sub-heading ('h2') "Exercises & Resources". -->
-               <h2>Exercises & Resources</h2>
-               <!-- TODO: Use an unordered list ('ul') to display the links for the week. -->
-               <ul id="week-links-list">
-                    <!-- TODO: Add list items ('li') with anchor tags ('a') for each resource. Use dummy links for now. -->
-                    <!-- Example: <li><a href="#">Exercise 1 - Basic Tags</a></li> -->
-                    <li> <a href="https://www.w3schools.com/html/">github</a></li>
-               <!-- End of the list. -->
-               </ul>
-          <!-- End of article. -->
-          </article>
+                    <!-- TODO: Add another sub-heading ('h2') "Exercises & Resources". -->
+                    <h2>Exercises & Resources</h2>
+                    <!-- TODO: Use an unordered list ('ul') to display the links for the week. -->
+                    <ul id="week-links-list">
+                         <!-- TODO: Add list items ('li') with anchor tags ('a') for each resource. Use dummy links for now. -->
+                         <!-- Example: <li><a href="#">Exercise 1 - Basic Tags</a></li> -->
+                         <li> <a href="details.html">week 1</a></li>
+                         <a href="details.html">Week 2</a>
+                    <!-- End of the list. -->
+                    </ul>
+               <!-- End of article. -->
+               </article>
 
-          <!-- Section 2: Discussion Forum -->
-          <!-- TODO: Create a 'section' for the discussion, with an 'id' of "discussion-forum". -->
-          <section>
-               <!-- TODO: Add a sub-heading ('h2') "Discussion". -->
-               <h2>Discussion</h2>
+               <!-- Section 2: Discussion Forum -->
+               <!-- TODO: Create a 'section' for the discussion, with an 'id' of "discussion-forum". -->
+               <section>
+                    <!-- TODO: Add a sub-heading ('h2') "Discussion". -->
+                    <h2>Discussion</h2>
 
-               <!-- Subsection 2.1: Existing Comments -->
-               <!-- TODO: Add a container (like a 'div') for the list of comments. -->
-               <div id="comment-list">
-                    <!-- TODO: Add 1-2 dummy comments to show the structure. -->
-                    <!-- Example Comment 1: -->
-                    <!-- TODO: Use an 'article' for each comment. -->
-                    <article>
-                         <!-- TODO: Use a 'p' for the comment text (e.g., "I have a question about the 'header' tag."). -->
-                         <p>I have a question about the 'header' tag.</p>
-                         <!-- TODO: Use a 'footer' to show the author (e.g., "Posted by: John Doe"). -->
-                         <footer>Posted by: Taslim Hanouf</footer>
-                    <!-- End of comment article. -->
-                    </article>
+                    <!-- Subsection 2.1: Existing Comments -->
+                    <!-- TODO: Add a container (like a 'div') for the list of comments. -->
+                    <div id="comment-list">
+                         <p></p>
+                         <!-- TODO: Add 1-2 dummy comments to show the structure. -->
+                         <!-- Example Comment 1: -->
+                         <!-- TODO: Use an 'article' for each comment. -->
+                         <article>
+                              <!-- TODO: Use a 'p' for the comment text (e.g., "I have a question about the 'header' tag."). -->
+                              <p> </p>
+                              <!-- TODO: Use a 'footer' to show the author (e.g., "Posted by: John Doe"). -->
+                              <footer>Posted by:</footer>
+                         <!-- End of comment article. -->
+                         </article>
                     </div>
-               <!-- Subsection 2.2: Add a Comment Form -->
-               <!-- TODO: Create a 'form' for users to post new comments. Action can be '#'. -->
-               <form id="comment-form">
-                    <!-- TODO: Use a 'fieldset' to group the controls. -->
-                    <fieldset>
-                         <!-- TODO: Add a 'legend', e.g., "Ask a Question". -->
-                         <legend>Ask Question</legend>
+                    <!-- Subsection 2.2: Add a Comment Form -->
+                    <!-- TODO: Create a 'form' for users to post new comments. Action can be '#'. -->
+                    <form id="comment-form">
+                         <!-- TODO: Use a 'fieldset' to group the controls. -->
+                         <fieldset>
+                              <!-- TODO: Add a 'legend', e.g., "Ask a Question". -->
+                              <legend>Ask Question</legend>
 
-                         <!-- TODO: Add a 'label' and 'textarea' for the comment box.
-                         
-                              - label 'for': "new-comment"
-                              - textarea 'id': "new-comment", required -->
-                         <label for="new-comment-text">comment:</label>
-                         <textarea id="new-comment-text" required></textarea>
-                         <!-- TODO: Add a 'button' to submit the comment.
-                              - type="submit", Text: "Post Comment" -->
-                         <button type="submit">Post comment</button>     
-                    <!-- End of fieldset. -->
-                    </fieldset>
-               <!-- End of form. -->
-               </form>
-          <!-- End of discussion section. -->
-          </section>
-
-     <!-- End of main. -->
+                              <!-- TODO: Add a 'label' and 'textarea' for the comment box.
+                              
+                                   - label 'for': "new-comment"
+                                   - textarea 'id': "new-comment", required -->
+                              <label for="new-comment-text">comment:</label>
+                              <textarea id="new-comment-text" required></textarea>
+                              <!-- TODO: Add a 'button' to submit the comment.
+                                   - type="submit", Text: "Post Comment" -->
+                              <button type="submit">Post comment</button>     
+                         <!-- End of fieldset. -->
+                         </fieldset>
+                    <!-- End of form. -->
+                    </form>
+                <!-- End of discussion section. -->
+               </section>
+            <!-- End of main. -->
           </main>
           <script src="details.js" defer></script>
 
      </body>
-     </html>
+</html>
 

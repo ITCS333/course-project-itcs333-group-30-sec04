@@ -11,7 +11,7 @@
     3. Implement the TODOs below.
   */
 
-  const { createElement } = require("react");
+  //const { createElement } = require("react");
 
   // --- Element Selections ---
   // TODO: Select the section for the week list ('#week-list-section').
@@ -44,12 +44,16 @@
     article.appendChild(description);
 
     const links= document.createElement("a");
-    links.href= `details.html?id=${week.id}`
+    links.href= `details.html?id=${week.id}`;
     links.textContent="View Details & Discussion";
+    links.setAttribute('role', 'button');
     article.appendChild(links);
 
     return article;
   }
+
+  
+
 
   /**
    * TODO: Implement the loadWeeks function.
@@ -62,18 +66,38 @@
    * - Call `createWeekArticle()`.
    * - Append the returned <article> element to `listSection`.
    */
+
   async function loadWeeks() {
     // ... your implementation here ...
+    
     try{
-      const response= await fetch("weeks.json");
-      const listWeek= await response.json();
+       // First, try to get weeks from localStorage
+      let listWeek = JSON.parse(localStorage.getItem("weeksData"));
+      //const response= await fetch("api/weeks.json");
+      
+      if(!listWeek){
+        // If nothing in localStorage, fetch from JSON file
+        const response= await fetch("api/weeks.json");
+        listWeek= await response.json();
+        console.log("Loaded weeks:", listWeek);
+
+        // Save initial JSON data to localStorage so future updates persist
+        localStorage.setItem("weeksData", JSON.stringify(listWeek));
+      }
+      else {
+      console.log("Loaded weeks from localStorage:", listWeek);
+    }
+  
 
       listSection.innerHTML="";
+      console.log("Cleared existing content in listSection.");
+
 
       listWeek.forEach(element => { 
         const weekArticle=createWeekArticle(element);
         listSection.appendChild(weekArticle);
       });
+      console.log("All week articles appended to listSection.");
 
     } 
     catch(error){

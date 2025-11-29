@@ -67,7 +67,7 @@
   function renderWeekDetails(week) {
     // ... your implementation here ...
     weekTitle.textContent=week.title;
-    weekStartDate.textContent=`Starts on: ${week.startDate}`
+    weekStartDate.textContent=`Starts on: ${week.startDate}`;
     weekDescription.textContent=week.description;
 
     weekLinksList.innerHTML="";
@@ -77,6 +77,7 @@
       const a= document.createElement("a");
       a.href=link;
       a.textContent=link;
+      a.target = "_blank"; // open links in a new tab
       li.appendChild(a);
 
       weekLinksList.appendChild(li);
@@ -147,11 +148,11 @@
       return;
     }  
 
-    const commentObj={
+    const newComment={
       author: 'Student', 
       text: commentText
     };
-    currentComments.push(commentObj);
+    currentComments.push(newComment);
     renderComments();
 
     newCommentText.value="";
@@ -176,39 +177,77 @@
    */
   async function initializePage() {
     // ... your implementation here ...
+
     currentWeekId= getWeekIdFromURL();
+    console.log("Current Week ID from URL:", currentWeekId);
 
     if(!currentWeekId){
       weekTitle.textContent="week not found.";
       return;
     }
+    const commentKey = currentWeekId;
+    
 
     try{
 
-      const weeksResponse= await fetch('weeks.json');
-      const commentResponse= await fetch('comments.json');
+      const weeksUrl = 'api/weeks.json';
+      const commentsUrl = 'api/comments.json';
 
-      const resultWeek= await weeksResponse.json();
-      const resultComment= await commentResponse.json();
-      const foundWeek= resultWeek.find(week => week.id=== currentWeekId);
-          
-      if(resultComment[currentWeekId]){
-        currentComments= resultComment[currentWeekId];
+      //check
+      const storedWeeks = JSON.parse(localStorage.getItem("weeksData"));
+      let weeksPromise;
+
+      if(storedWeeks){
+        //wrap stpred week in a promise
+        weeksPromise = Promise.resolve({ json: () => storedWeeks });
+
       }
       else{
-        currentComments=[];
+        weeksPromise = fetch(weeksUrl);
       }
-          
-      if(foundWeek){
+
+
+      const [weeksResponse, commentResponse]= await Promise.all([
+        weeksPromise,
+        fetch(commentsUrl)
+      ]);
+
+    
+      const weeksData= await weeksResponse.json();
+      const commentData= await commentResponse.json();
+
+
+      if (!storedWeeks) {
+        localStorage.setItem("weeksData", JSON.stringify(weeksData));
+      }
+      console.log("Weeks loaded:", weeksData);
+      console.log("Comments loaded:", commentData);
+
+      const foundWeek= weeksData.find(week => week.id=== currentWeekId);
+      console.log("Found week:", foundWeek);
+
+      currentComments = commentData[commentKey] || [];
+      console.log("Current comments:", currentComments);
+
+
+      //currentComments = Object.values(commentData).flat();
+      console.log("All current comments:", currentComments);
+
+      if (foundWeek) {
+
         renderWeekDetails(foundWeek);
         renderComments();
-        commentForm.addEventListener('submit', handleAddComment);
+        commentForm.addEventListener("submit", handleAddComment);
+        console.log("Week details and comments rendered.");
+        
       }
       else{
-        weekTitle.textContent="week not found";
+        weekTitle.textContent = `Week with ID '${currentWeekId}' not found in weeks.json.`;
+        console.log("Week not found in weeks.json.");
+      }
+      
       }
 
-      }
       catch(error){
         console.log('Error:', error);
       }
