@@ -71,29 +71,14 @@
     // ... your implementation here ...
     
     try{
-       // First, try to get weeks from localStorage
-      let listWeek = JSON.parse(localStorage.getItem("weeksData"));
-      //const response= await fetch("api/weeks.json");
-      
-      if(!listWeek){
-        // If nothing in localStorage, fetch from JSON file
-        const response= await fetch("api/weeks.json");
-        listWeek= await response.json();
-        console.log("Loaded weeks:", listWeek);
-
-        // Save initial JSON data to localStorage so future updates persist
-        localStorage.setItem("weeksData", JSON.stringify(listWeek));
-      }
-      else {
-      console.log("Loaded weeks from localStorage:", listWeek);
-    }
+      const response= await fetch("api/weeks.json");
+      const weeks = await response.json();
   
-
       listSection.innerHTML="";
       console.log("Cleared existing content in listSection.");
 
 
-      listWeek.forEach(element => { 
+      weeks.forEach(element => { 
         const weekArticle=createWeekArticle(element);
         listSection.appendChild(weekArticle);
       });

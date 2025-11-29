@@ -123,12 +123,8 @@
       description: description,
       weekLinks:linkArray
     };
-    // Get current weeks from localStorage
-    //weeks = JSON.parse(localStorage.getItem("weeksData")) || [];
 
     weeks.push(newWeekobj);
-    // Save updated weeks to localStorage
-    localStorage.setItem("weeksData", JSON.stringify(weeks));
     
     renderTable();
     weekForm.reset();
@@ -150,13 +146,9 @@
 
     if(event.target.classList.contains("delete-btn")) {
       const weekId = event.target.dataset.id; 
-      if(confirm('Are you sure you want to delete this week?')){
-        weeks=weeks.filter(week => week.id != weekId);
-        localStorage.setItem("weeksData", JSON.stringify(weeks)); // <-- update storage
-        renderTable();
-        showMessage('Week deleted successfully!', 'success');
-      }  
-    
+      weeks=weeks.filter(week => week.id != weekId);
+      renderTable();
+      
     }
   
   }
@@ -175,17 +167,10 @@
   // ... your implementation here ...
 
     try{
-      let storedWeeks = JSON.parse(localStorage.getItem("weeksData"));
       
-      if(storedWeeks){
-        weeks=storedWeeks
-      }
-      else{
-        const response= await fetch('api/weeks.json');
-        weeks= await response.json();
-        localStorage.setItem("weeksData", JSON.stringify(weeks));
-      }
-
+        
+      const response= await fetch('api/weeks.json');
+      weeks= await response.json();
       //console.log("Loaded weeks:", result);
       renderTable();
       weekForm.addEventListener('submit', handleAddWeek);

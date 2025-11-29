@@ -142,6 +142,7 @@
   function handleAddComment(event) {
     // ... your implementation here ...
     event.preventDefault();
+
     const commentText= newCommentText.value.trim();
       
     if(!commentText){
@@ -189,37 +190,15 @@
     
 
     try{
-
-      const weeksUrl = 'api/weeks.json';
-      const commentsUrl = 'api/comments.json';
-
-      //check
-      const storedWeeks = JSON.parse(localStorage.getItem("weeksData"));
-      let weeksPromise;
-
-      if(storedWeeks){
-        //wrap stpred week in a promise
-        weeksPromise = Promise.resolve({ json: () => storedWeeks });
-
-      }
-      else{
-        weeksPromise = fetch(weeksUrl);
-      }
-
-
-      const [weeksResponse, commentResponse]= await Promise.all([
-        weeksPromise,
-        fetch(commentsUrl)
+      const [weeksResponse, commentsResponse] = await Promise.all([
+      fetch("api/weeks.json"),
+      fetch("api/comments.json")
       ]);
 
-    
+
       const weeksData= await weeksResponse.json();
-      const commentData= await commentResponse.json();
+      const commentData= await commentsResponse.json();
 
-
-      if (!storedWeeks) {
-        localStorage.setItem("weeksData", JSON.stringify(weeksData));
-      }
       console.log("Weeks loaded:", weeksData);
       console.log("Comments loaded:", commentData);
 
