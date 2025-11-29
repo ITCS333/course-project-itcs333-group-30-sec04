@@ -9,33 +9,64 @@
 <html lang="en">
 <head>
     <!-- TODO: Add meta tags for charset and viewport. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- TODO: Add a title, e.g., "Course Assignments". -->
+    <title>Course Assignments</title>
 
     <!-- TODO: Link to your CSS framework or stylesheet. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@latest/css/pico.classless.min.css">
 </head>
 <body>
 
     <!-- TODO: Create a 'header' with a main heading ('h1') "Course Assignments". -->
+    <header>
+        <h1>Course Assignments</h1>
+    </header>
 
     <!-- TODO: Create the 'main' content area. -->
+    <main>
         <!-- TODO: Create a 'section' to contain the list of assignments. -->
+        <section>
             <!-- TODO: Add 2-3 dummy assignment entries using the structure below. -->
 
             <!-- Example Assignment 1: -->
             <!-- TODO: Use an 'article' element for each assignment. -->
+            <article>
                 <!-- TODO: Add a heading ('h2') for the assignment's title (e.g., "Assignment 1: HTML Basics"). -->
+                <h2>Assignment 1: HTML Basics</h2>
                 <!-- TODO: Add a paragraph ('p') to display the due date, e.g., "Due: YYYY-MM-DD". -->
+                <p><strong>Due: 2025-03-15</strong></p>
                 <!-- TODO: Add another paragraph ('p') for a brief description. -->
+                <p>Create a basic HTML page that demonstrates your understanding of semantic HTML5 elements including proper document structure, headings, paragraphs, and lists.</p>
                 <!-- TODO: Add an anchor tag ('a') that links to the detail page. 
                      - For now, the 'href' can be "assignment-detail.html".
                      - The link text should be "View Details & Discussion". -->
+                <a href="assignment-detail.html">View Details & Discussion</a>
+            </article>
             <!-- End of article. -->
 
             <!-- Example Assignment 2: -->
             <!-- TODO: Create a second 'article' for another assignment with the same structure. -->
+            <article>
+                <h2>Assignment 2: CSS Styling</h2>
+                <p><strong>Due: 2025-03-22</strong></p>
+                <p>Style your HTML page using CSS with focus on layout, typography, and responsive design principles.</p>
+                <a href="assignment-detail.html">View Details & Discussion</a>
+            </article>
 
+            <!-- Example Assignment 3: -->
+            <article>
+                <h2>Assignment 3: JavaScript Fundamentals</h2>
+                <p><strong>Due: 2025-04-05</strong></p>
+                <p>Add interactive functionality to your web page using JavaScript, including event handling and DOM manipulation.</p>
+                <a href="assignment-detail.html">View Details & Discussion</a>
+            </article>
+
+        </section>
         <!-- End of assignment list section. -->
+    </main>
     <!-- End of main. -->
 
 </body>
