@@ -80,7 +80,7 @@ if (strlen($password) < 8) {
 // For demonstration, we use JSON as mock database instead
 try {
    // TODO: Wrap database operations in a try-catch block to handle PDO exceptions
-   $usersJson = file_get_contents('users.json'); // Your JSON file
+   $usersJson = file_get_contents('../auth/students.json'); // Your JSON file
    $users = json_decode($usersJson, true);
    // --- Prepare SQL Query ---
    // TODO: Write a SQL SELECT query to find the user by email
