@@ -39,6 +39,7 @@ const messageContainer = document.getElementById("message-container");
  * 2. Set the class name of `messageContainer` to `type`
  * (this will allow for CSS styling of 'success' and 'error' states).
  */
+
 function displayMessage(message, type) {  messageContainer.textContent = message;
    messageContainer.className = type;
   // ... your implementation here ...
@@ -104,13 +105,55 @@ function handleLogin(event) {
        displayMessage("Password must be at least 8 characters.", "error");
        return;
    }
+   fetch("login.php", {
 
-   displayMessage("Login successful!", "success");
-   emailInput.value = "";
-   passwordInput.value = "";
-  // ... your implementation here ...
+        method: "POST",
+
+        headers: {
+
+            "Content-Type": "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+            email: email,
+
+            password: password
+
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            displayMessage("Login successful!", "success");
+
+            emailInput.value = "";
+
+            passwordInput.value = "";
+
+        } else {
+
+            displayMessage(data.message, "error");
+
+        }
+
+    })
+
+    .catch(error => {
+
+        displayMessage("Error connecting to server.", "error");
+
+    });
+
 }
-
+ 
+  // ... your implementation here ...
 /**
  * TODO: Implement the setupLoginForm function.
  * This function will be called once to set up the form.
