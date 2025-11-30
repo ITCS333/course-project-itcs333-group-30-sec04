@@ -13,12 +13,15 @@
 
 // --- Global Data Store ---
 // This will hold the weekly data loaded from the JSON file.
-let weeks = [];
+ let weeks = [];
 
 // --- Element Selections ---
 // TODO: Select the week form ('#week-form').
+ const weekForm= document.getElementById("week-form");
 
 // TODO: Select the weeks table body ('#weeks-tbody').
+ const weekTbody= document.getElementById("weeks-tbody");
+
 
 // --- Functions ---
 
@@ -32,9 +35,44 @@ let weeks = [];
  * - An "Edit" button with class "edit-btn" and `data-id="${id}"`.
  * - A "Delete" button with class "delete-btn" and `data-id="${id}"`.
  */
-function createWeekRow(week) {
+ function createWeekRow(week) {
+  
   // ... your implementation here ...
-}
+   const newtr= document.createElement("tr");
+   newtr.dataset.weekId= week.id;
+
+   const titletd= document.createElement("td");
+   titletd.textContent= week.title;
+   newtr.appendChild(titletd);
+
+   const descrtd=document.createElement("td");
+   descrtd.textContent=week.description;
+   descrtd.title= week.description; // to shoe full text on hover
+   newtr.appendChild(descrtd);
+
+  //td button
+   const tdbutton=document.createElement("td");
+   
+ 
+  //edit button
+   const editBtn= document.createElement("button")
+   editBtn.classList.add("edit-btn")
+   editBtn.dataset.id= week.id;
+   editBtn.textContent="Edit";
+   tdbutton.appendChild(editBtn);
+
+  //deletebtn
+   const deletebtn= document.createElement("button");
+   deletebtn.className="delete-btn";
+   deletebtn.dataset.id= week.id; 
+   deletebtn.textContent= "delete";
+   tdbutton.appendChild(deletebtn);
+
+   newtr.appendChild(tdbutton);
+
+   return newtr;
+  
+ }
 
 /**
  * TODO: Implement the renderTable function.
@@ -44,9 +82,15 @@ function createWeekRow(week) {
  * 3. For each week, call `createWeekRow()`, and
  * append the resulting <tr> to `weeksTableBody`.
  */
-function renderTable() {
-  // ... your implementation here ...
-}
+  function renderTable() {
+    // ... your implementation here ...
+    weekTbody.innerHTML="";
+
+    weeks.forEach(week => {
+      const row=createWeekRow(week);
+      weekTbody.appendChild(row);
+
+    }); }
 
 /**
  * TODO: Implement the handleAddWeek function.
@@ -61,9 +105,31 @@ function renderTable() {
  * 6. Call `renderTable()` to refresh the list.
  * 7. Reset the form.
  */
-function handleAddWeek(event) {
+  function handleAddWeek(event){
   // ... your implementation here ...
-}
+    event.preventDefault();
+
+    const title= document.getElementById("week-title").value;
+    const startDate= document.getElementById("week-start-date").value;
+    const description= document.getElementById("week-description").value;
+
+    const weekLinks= document.getElementById("week-links").value;
+    const linkArray= weekLinks.split("\n").filter(link => link.trim() !="");
+  
+    const newWeekobj={
+      id:`week_${Date.now()}`,
+      title: title,
+      startDate: startDate,
+      description: description,
+      weekLinks:linkArray
+    };
+
+    weeks.push(newWeekobj);
+    
+    renderTable();
+    weekForm.reset();
+    showMessage('Week added successfully', 'success');
+  }
 
 /**
  * TODO: Implement the handleTableClick function.
@@ -75,9 +141,17 @@ function handleAddWeek(event) {
  * with the matching ID (in-memory only).
  * 4. Call `renderTable()` to refresh the list.
  */
-function handleTableClick(event) {
+  function handleTableClick(event) {
   // ... your implementation here ...
-}
+
+    if(event.target.classList.contains("delete-btn")) {
+      const weekId = event.target.dataset.id; 
+      weeks=weeks.filter(week => week.id != weekId);
+      renderTable();
+      
+    }
+  
+  }
 
 /**
  * TODO: Implement the loadAndInitialize function.
@@ -89,10 +163,26 @@ function handleTableClick(event) {
  * 4. Add the 'submit' event listener to `weekForm` (calls `handleAddWeek`).
  * 5. Add the 'click' event listener to `weeksTableBody` (calls `handleTableClick`).
  */
-async function loadAndInitialize() {
+  async function loadAndInitialize() {
   // ... your implementation here ...
-}
+
+    try{
+      
+        
+      const response= await fetch('api/weeks.json');
+      weeks= await response.json();
+      //console.log("Loaded weeks:", result);
+      renderTable();
+      weekForm.addEventListener('submit', handleAddWeek);
+      weekTbody.addEventListener('click', handleTableClick);
+     
+    }
+    catch(error){
+      console.log('Error:', error); 
+    }
+    
+  }
 
 // --- Initial Page Load ---
 // Call the main async function to start the application.
-loadAndInitialize();
+  loadAndInitialize();
