@@ -1,3 +1,4 @@
+
 let assignments = [];
 const API_URL = 'index.php?resource=assignments';
 
@@ -23,7 +24,7 @@ function createAssignmentRow(assignment) {
 
 function renderTable() {
     assignmentsTableBody.innerHTML = '';
-
+    
     assignments.forEach(assignment => {
         const row = createAssignmentRow(assignment);
         assignmentsTableBody.appendChild(row);
@@ -32,21 +33,21 @@ function renderTable() {
 
 async function handleAddAssignment(event) {
     event.preventDefault();
-
+    
     const title = assignmentTitleInput.value.trim();
     const description = assignmentDescriptionInput.value.trim();
     const dueDate = assignmentDueDateInput.value;
     const filesText = assignmentFilesInput.value.trim();
-
+    
     if (!title || !description || !dueDate) {
         alert('Please fill in all required fields');
         return;
     }
-
+    
     const files = filesText
         ? filesText.split('\n').filter(file => file.trim() !== '')
         : [];
-
+    
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -60,13 +61,13 @@ async function handleAddAssignment(event) {
                 files
             })
         });
-
+        
         const result = await response.json();
-
+        
         if (!response.ok) {
             throw new Error(result.error || 'Failed to create assignment');
         }
-
+        
         await loadAssignments();
         assignmentForm.reset();
         alert('Assignment added successfully!');
@@ -84,13 +85,13 @@ async function handleTableClick(event) {
                 const response = await fetch(`index.php?resource=assignments&id=${assignmentId}`, {
                     method: 'DELETE'
                 });
-
+                
                 const result = await response.json();
-
+                
                 if (!response.ok) {
                     throw new Error(result.error || 'Failed to delete assignment');
                 }
-
+                
                 await loadAssignments();
                 alert('Assignment deleted successfully!');
             } catch (error) {
@@ -100,15 +101,14 @@ async function handleTableClick(event) {
         }
     } else if (event.target.classList.contains('edit-btn')) {
         const assignmentId = event.target.getAttribute('data-id');
-        // FIX: compare as strings
-        const assignment = assignments.find(a => String(a.id) === String(assignmentId));
-
+        const assignment = assignments.find(a => a.id === assignmentId);
+        
         if (assignment) {
             assignmentTitleInput.value = assignment.title;
             assignmentDescriptionInput.value = assignment.description;
             assignmentDueDateInput.value = assignment.dueDate;
             assignmentFilesInput.value = assignment.files ? assignment.files.join('\n') : '';
-
+            
             const submitButton = document.getElementById('add-assignment');
             submitButton.textContent = 'Update Assignment';
             submitButton.onclick = async function(e) {
@@ -127,7 +127,7 @@ async function handleUpdateAssignment(assignmentId) {
     const files = filesText
         ? filesText.split('\n').filter(file => file.trim() !== '')
         : [];
-
+    
     try {
         const response = await fetch(API_URL, {
             method: 'PUT',
@@ -142,20 +142,20 @@ async function handleUpdateAssignment(assignmentId) {
                 files
             })
         });
-
+        
         const result = await response.json();
-
+        
         if (!response.ok) {
             throw new Error(result.error || 'Failed to update assignment');
         }
-
+        
         await loadAssignments();
-
+        
         assignmentForm.reset();
         const submitButton = document.getElementById('add-assignment');
         submitButton.textContent = 'Add Assignment';
         submitButton.onclick = handleAddAssignment;
-
+        
         alert('Assignment updated successfully!');
     } catch (error) {
         console.error('Error updating assignment:', error);
@@ -167,11 +167,11 @@ async function loadAssignments() {
     try {
         const response = await fetch(API_URL);
         assignments = await response.json();
-
+        
         if (!response.ok) {
             throw new Error(assignments.error || 'Failed to load assignments');
         }
-
+        
         renderTable();
     } catch (error) {
         console.error('Error loading assignments:', error);

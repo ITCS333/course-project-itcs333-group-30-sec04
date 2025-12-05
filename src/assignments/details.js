@@ -1,26 +1,34 @@
-console.log('details page with per-user editable comments loaded');
+console.log('details page with seeded + editable comments loaded');
 
 const ASSIGNMENTS_API = 'index.php?resource=assignments';
 const COMMENTS_API    = 'index.php?resource=comments';
+const COMMENTS_JSON   = 'comments.json';
+
+// All DB comments with id <= this number are treated as "already written"
+// (the ones inserted by schema.sql) and are read-only.
+const SEED_COMMENT_MAX_ID = 6;
 
 let assignments         = [];
 let currentAssignmentId = null;
 let currentComments     = [];
 let editingCommentId    = null;
 
-// ----- DOM Elements -----
+// Assignment detail elements
 const assignmentTitle       = document.getElementById('assignment-title');
 const assignmentDueDate     = document.getElementById('assignment-due-date');
 const assignmentDescription = document.getElementById('assignment-description');
 const assignmentFilesList   = document.getElementById('assignment-files-list');
 
+// Comments UI elements
 const commentList   = document.getElementById('comment-list');
 const commentForm   = document.getElementById('comment-form');
-const commentAuthor = document.getElementById('comment-author'); // "Your name (optional)"
+const commentAuthor = document.getElementById('comment-author');
 const commentText   = document.getElementById('comment-text');
 const commentStatus = document.getElementById('comment-status');
 
-// ----- Helpers -----
+// -------------------------------------------------------------
+// Helpers
+// -------------------------------------------------------------
 function getAssignmentIdFromURL() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -47,7 +55,7 @@ function renderAssignmentDetails(assignment) {
         assignment.files.forEach(file => {
             const li = document.createElement('li');
             const a  = document.createElement('a');
-            a.href = '#'; 
+            a.href = file;
             a.textContent = file;
             li.appendChild(a);
             assignmentFilesList.appendChild(li);
@@ -74,7 +82,7 @@ function createCommentArticle(comment) {
 
     footer.appendChild(small);
 
-    // Only allow edit/delete for non-readonly comments
+    // Only NON–read-only comments get Edit/Delete buttons
     if (!comment.readOnly) {
         footer.appendChild(document.createElement('br'));
 
@@ -116,9 +124,53 @@ function renderComments() {
     });
 }
 
-// ----- Load comments from API (DB only) -----
-// currentUserName controls who can edit/delete (only their own comments)
-async function loadUserComments(currentUserName) {
+// -------------------------------------------------------------
+// Seed comments from comments.json → read-only
+// -------------------------------------------------------------
+async function loadSeedComments() {
+    if (!currentAssignmentId) return [];
+
+    try {
+        const res  = await fetch(COMMENTS_JSON);
+        const data = await res.json();
+
+        if (typeof data !== 'object' || data === null) {
+            throw new Error('comments.json did not contain an object');
+        }
+
+        let key = String(currentAssignmentId);
+        let seedList = data[key];
+
+        if (!Array.isArray(seedList)) {
+            const fallbackKey = 'asg_' + String(currentAssignmentId);
+            seedList = data[fallbackKey];
+        }
+
+        if (!Array.isArray(seedList)) {
+            return [];
+        }
+
+        // All JSON-based comments are read-only
+        return seedList.map((c, i) => ({
+            id: `seed-${currentAssignmentId}-${i}`,
+            assignmentId: currentAssignmentId,
+            author: c.author || 'Anonymous',
+            text: c.text || '',
+            createdAt: null,
+            readOnly: true
+        }));
+    } catch (err) {
+        console.warn('Error loading seed comments:', err);
+        return [];
+    }
+}
+
+// -------------------------------------------------------------
+// User comments from API (DB)
+// IDs 1..SEED_COMMENT_MAX_ID are "already there" → read-only
+// IDs > SEED_COMMENT_MAX_ID are new → editable
+// -------------------------------------------------------------
+async function loadUserComments() {
     if (!currentAssignmentId) return [];
 
     try {
@@ -136,12 +188,14 @@ async function loadUserComments(currentUserName) {
         }
 
         return data.map(c => {
-            const author = c.author || 'Anonymous';
+            const numericId = Number(c.id);
+            const isSeed = Number.isFinite(numericId) &&
+                           numericId <= SEED_COMMENT_MAX_ID;
+
             return {
                 ...c,
                 id: String(c.id),
-                // Only comments where author matches currentUserName are editable
-                readOnly: author !== currentUserName
+                readOnly: isSeed // ← old DB comments become read-only
             };
         });
     } catch (err) {
@@ -150,22 +204,26 @@ async function loadUserComments(currentUserName) {
     }
 }
 
+// -------------------------------------------------------------
+// Load + merge comments
+// -------------------------------------------------------------
 async function loadComments() {
     commentList.innerHTML = '<p>Loading comments...</p>';
 
-    // Current user = value in "Your name (optional)" box, or 'Anonymous'
-    const currentUserName = commentAuthor
-        ? (commentAuthor.value.trim() || 'Anonymous')
-        : 'Anonymous';
+    const [seed, user] = await Promise.all([
+        loadSeedComments(),
+        loadUserComments()
+    ]);
 
-    const userComments = await loadUserComments(currentUserName);
-    currentComments = userComments;
+    currentComments = [...seed, ...user];
     renderComments();
 }
 
-// ----- Edit helpers -----
+// -------------------------------------------------------------
+// Editing logic – only for NON–read-only comments
+// -------------------------------------------------------------
 function enterEditMode(comment) {
-    if (comment.readOnly) return; 
+    if (comment.readOnly) return;  // cannot edit seed/old comments
 
     editingCommentId = comment.id;
     commentAuthor.value = comment.author || '';
@@ -183,7 +241,9 @@ function exitEditMode() {
         'Post Comment';
 }
 
-// ----- Submit / Save comment -----
+// -------------------------------------------------------------
+// Submit (create or update) comments
+// -------------------------------------------------------------
 async function handleCommentSubmit(event) {
     event.preventDefault();
     if (!currentAssignmentId) return;
@@ -211,7 +271,8 @@ async function handleCommentSubmit(event) {
         if (editingCommentId) {
             const comment = currentComments.find(c => c.id === editingCommentId);
             if (!comment || comment.readOnly) {
-                throw new Error('You can only edit your own comments.');
+                // cannot edit seed / read-only comments
+                throw new Error('Cannot edit this comment.');
             }
 
             method = 'PUT';
@@ -241,7 +302,9 @@ async function handleCommentSubmit(event) {
     }
 }
 
-// ----- Click handler for edit/delete -----
+// -------------------------------------------------------------
+// Click handler for Edit/Delete buttons
+// -------------------------------------------------------------
 async function handleCommentListClick(event) {
     const editBtn = event.target.closest('.edit-comment-btn');
     const delBtn  = event.target.closest('.delete-comment-btn');
@@ -251,8 +314,6 @@ async function handleCommentListClick(event) {
         const comment = currentComments.find(c => c.id === id);
         if (comment && !comment.readOnly) {
             enterEditMode(comment);
-        } else {
-            alert('You can only edit your own comments.');
         }
     }
 
@@ -260,8 +321,8 @@ async function handleCommentListClick(event) {
         const id = delBtn.dataset.id;
         const comment = currentComments.find(c => c.id === id);
 
+        // Cannot delete read-only comments
         if (!comment || comment.readOnly) {
-            alert('You can only delete your own comments.');
             return;
         }
 
@@ -290,7 +351,9 @@ async function handleCommentListClick(event) {
     }
 }
 
-// ----- Init page -----
+// -------------------------------------------------------------
+// Init
+// -------------------------------------------------------------
 async function initPage() {
     currentAssignmentId = getAssignmentIdFromURL();
 
@@ -326,19 +389,12 @@ async function initPage() {
             'There was an error loading the assignment details.';
     }
 
-    // Load comments
+    // Load comments (seed + user)
     await loadComments();
 
     // Event listeners
     commentForm.addEventListener('submit', handleCommentSubmit);
     commentList.addEventListener('click', handleCommentListClick);
-
-    // When the user changes their name, recompute which comments are editable
-    if (commentAuthor) {
-        commentAuthor.addEventListener('change', () => {
-            loadComments();
-        });
-    }
 }
 
 initPage();
