@@ -65,9 +65,14 @@ require_once '../config/Database.php';
 // TODO: Get the PDO database connection
 // Example: $database = new Database();
 //          $db = $database->getConnection();
+if (!class_exists('Database')) {
+    die(json_encode([
+        "success" => false,
+        "message" => "Database class NOT found. Check file path and class name."
+    ]));
+}
 $database = new Database();
 $db = $database->getConnection();
-
 
 // TODO: Get the HTTP request method
 // Use $_SERVER['REQUEST_METHOD']
@@ -82,11 +87,9 @@ $data = json_decode($rawInput, true);
 // TODO: Parse query parameters
 // Get the 'resource' parameter to determine if request is for weeks or comments
 // Example: ?resource=weeks or ?resource=comments
-if (isset($_GET['resource'])) {
-    $resource = $_GET['resource'];
-} else {
-    $resource = 'weeks';
-}
+$resource = $_GET['resource'] ?? 'weeks';
+$weekId = $_GET['week_id'] ?? null;
+$commentId = $_GET['id'] ?? null;
 
 
 // ============================================================================
@@ -116,39 +119,42 @@ function getAllWeeks($db) {
     // TODO: Check if search parameter exists
     // If yes, add WHERE clause using LIKE for title and description
     // Example: WHERE title LIKE ? OR description LIKE ?
-    if (!empty($search)) {
-    $sql .= " WHERE title LIKE ? OR description LIKE ?";}
-    // TODO: Check if sort parameter exists
-    // Validate sort field to prevent SQL injection (only allow: title, start_date, created_at)
-    // If invalid, use default sort field (start_date)
-    $allowedSortFields = ['title', 'start_date', 'created_at'];
-    if (!isValidSortField($sort, $allowedSortFields)) {
-        $sort = 'start_date'; }
-    // TODO: Check if order parameter exists
-    // Validate order to prevent SQL injection (only allow: asc, desc)
-    // If invalid, use default order (asc)
-    $order = strtolower($order);
-    if (!in_array($order, ['asc', 'desc'])) {
-        $order = 'asc'; // default
-    }
-    // TODO: Add ORDER BY clause to the query
-    $sql .= " ORDER BY $sort $order";
-
-    // TODO: Prepare the SQL query using PDO
-    //$sql = "SELECT week_id, title, start_date, description, links, created_at FROM weeks";
-    $stmt = $db->prepare($sql);
-    $sql = "SELECT week_id, title, start_date, description, links, created_at FROM weeks";
-    // TODO: Bind parameters if using search
-    // Use wildcards for LIKE: "%{$searchTerm}%"
-    $params = [];
+   $params = [];
     if (!empty($search)) {
         $sql .= " WHERE title LIKE ? OR description LIKE ?";
         $searchTerm = "%$search%";
         $params[] = $searchTerm;
         $params[] = $searchTerm;
-    }    
+    }
+    // TODO: Check if sort parameter exists
+    // Validate sort field to prevent SQL injection (only allow: title, start_date, created_at)
+    // If invalid, use default sort field (start_date)
+    $allowedSortFields = ['title', 'start_date', 'created_at'];
+    if (!in_array($sort, $allowedSortFields)) {
+        $sort = 'start_date';
+    }
+    // TODO: Check if order parameter exists
+    // Validate order to prevent SQL injection (only allow: asc, desc)
+    // If invalid, use default order (asc)
+
+    $order = strtolower($order);
+    if (!in_array($order, ['asc', 'desc'])) {
+        $order = 'asc';
+    }
+    $order = strtoupper($order);
+    // TODO: Add ORDER BY clause to the query
+    $sql .= " ORDER BY $sort $order";
+    // TODO: Prepare the SQL query using PDO
+    //$sql = "SELECT week_id, title, start_date, description, links, created_at FROM weeks";
+    $stmt = $db->prepare($sql);
+    // TODO: Bind parameters if using search
+    // Use wildcards for LIKE: "%{$searchTerm}%"
+    //if (!empty($search)) {
+    //$stmt->bindParam(1, $searchTerm, PDO::PARAM_STR);
+    //$stmt->bindParam(2, $searchTerm, PDO::PARAM_STR);
+      
     // TODO: Execute the query
-    $stmt->execute();
+    $stmt->execute($params); 
     // TODO: Fetch all results as an associative array
     $weeks = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // TODO: Process each week's links field
@@ -157,9 +163,7 @@ function getAllWeeks($db) {
         $week['links'] = json_decode($week['links'], true) ?? [];
     }
     // TODO: Return JSON response with success status and data
-    // Use sendResponse() helper function
-
-    
+    // Use sendResponse() helper functiom
     sendResponse(['success' => true, 'data' => $weeks]);
 }
 
