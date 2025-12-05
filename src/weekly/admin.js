@@ -128,9 +128,7 @@
     
     renderTable();
     weekForm.reset();
-    showMessage('Week added successfully', 'success');
   }
-
 /**
  * TODO: Implement the handleTableClick function.
  * This is an event listener on the `weeksTableBody` (for delegation).
@@ -166,9 +164,7 @@
   async function loadAndInitialize() {
   // ... your implementation here ...
 
-    try{
-      
-        
+    try{ 
       const response= await fetch('api/weeks.json');
       weeks= await response.json();
       //console.log("Loaded weeks:", result);
@@ -185,4 +181,4 @@
 
 // --- Initial Page Load ---
 // Call the main async function to start the application.
-  loadAndInitialize();
+  loadAndInitialize(); 

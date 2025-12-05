@@ -71,15 +71,15 @@
     weekDescription.textContent=week.description;
 
     weekLinksList.innerHTML="";
-    week.links.forEach(link => {
+    week.links.forEach(link => { //fix it 
       const li= document.createElement("li");
-
       const a= document.createElement("a");
+
       a.href=link;
       a.textContent=link;
-      a.target = "_blank"; // open links in a new tab
+      a.target = "_blank"; 
+      
       li.appendChild(a);
-
       weekLinksList.appendChild(li);
       
     });
@@ -144,7 +144,6 @@
     event.preventDefault();
 
     const commentText= newCommentText.value.trim();
-      
     if(!commentText){
       return;
     }  
@@ -153,9 +152,9 @@
       author: 'Student', 
       text: commentText
     };
+
     currentComments.push(newComment);
     renderComments();
-
     newCommentText.value="";
   }
 
@@ -180,7 +179,7 @@
     // ... your implementation here ...
 
     currentWeekId= getWeekIdFromURL();
-    console.log("Current Week ID from URL:", currentWeekId);
+    //console.log("Current Week ID from URL:", currentWeekId);
 
     if(!currentWeekId){
       weekTitle.textContent="week not found.";
@@ -203,15 +202,13 @@
       console.log("Comments loaded:", commentData);
 
       const foundWeek= weeksData.find(week => week.id=== currentWeekId);
-      console.log("Found week:", foundWeek);
+      ///console.log("Found week:", foundWeek);
 
       currentComments = commentData[commentKey] || [];
       console.log("Current comments:", currentComments);
 
 
       //currentComments = Object.values(commentData).flat();
-      console.log("All current comments:", currentComments);
-
       if (foundWeek) {
 
         renderWeekDetails(foundWeek);
