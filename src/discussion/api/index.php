@@ -119,7 +119,7 @@ function getAllTopics($db) {
     // TODO: Initialize base SQL query
     // Select topic_id, subject, message, author, and created_at (formatted as date)
 
-   $sql = "SELECT  topic_id, subject, message, author, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at FROM topics";
+   $sql = "SELECT  id, subject, message, author, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at FROM topics";
 
     // TODO: Initialize an array to hold bound parameters
 
@@ -197,18 +197,18 @@ function getTopicById($db, $topicId) {
     // TODO: Prepare SQL query to select topic by topic_id
     // Select topic_id, subject, message, author, and created_at
     $sql = "SELECT 
-                topic_id, 
+                id, 
                 subject, 
                 message, 
                 author, 
                 DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at
             FROM topics
-            WHERE topic_id = :topic_id
+            WHERE id = :id
             LIMIT 1";
                 
     // TODO: Prepare and bind the topic_id parameter
     $stmt = $db->prepare($sql);
-    $stmt->bindValue(':topic_id', $topicId);
+    $stmt->bindValue(':id', $topicId);
     // TODO: Execute the query
      $stmt->execute();
     
@@ -247,7 +247,7 @@ function createTopic($db, $data) {
     // TODO: Validate required fields
     // Check if topic_id, subject, message, and author are provided
     // If any required field is missing, return error with 400 status
-        $requiredFields = ['topic_id', 'subject', 'message', 'author'];
+        $requiredFields = ['id', 'subject', 'message', 'author'];
          foreach ($requiredFields as $field) {
         if (empty($data[$field])) {
             echo json_encode([
@@ -263,7 +263,7 @@ function createTopic($db, $data) {
     // TODO: Sanitize input data
     // Trim whitespace from all string fields
     // Use the sanitizeInput() helper function
-    $data['topic_id'] = sanitizeInput(trim($data['topic_id']));
+    $data['id'] = sanitizeInput(trim($data['id']));
     $data['subject']  = sanitizeInput(trim($data['subject']));
     $data['message']  = sanitizeInput(trim($data['message']));
     $data['author']   = sanitizeInput(trim($data['author']));
@@ -274,9 +274,9 @@ function createTopic($db, $data) {
     // TODO: Check if topic_id already exists
     // Prepare and execute a SELECT query to check for duplicate
     // If duplicate found, return error with 409 status (Conflict)
-     $checkSql = "SELECT topic_id FROM topics WHERE topic_id = :topic_id LIMIT 1";
+     $checkSql = "SELECT id FROM topics WHERE id = :id LIMIT 1";
      $stmtCheck = $db->prepare($checkSql);
-     $stmtCheck->bindValue(':topic_id', $data['topic_id']);
+     $stmtCheck->bindValue(':id', $data['id']);
      $stmtCheck->execute();
 
          $existingTopic = $stmtCheck->fetch(PDO::FETCH_ASSOC);
@@ -295,15 +295,15 @@ function createTopic($db, $data) {
     // TODO: Prepare INSERT query
     // Insert topic_id, subject, message, and author
     // The created_at field should auto-populate with CURRENT_TIMESTAMP
-    $sql = "INSERT INTO topics (topic_id, subject, message, author, created_at) 
-        VALUES (:topic_id, :subject, :message, :author, NOW())";
+    $sql = "INSERT INTO topics (id, subject, message, author, created_at) 
+        VALUES (:id, :subject, :message, :author, NOW())";
 
     // TODO: Prepare the statement and bind parameters
     // Bind all the sanitized values
     
         $stmt = $db->prepare($sql);
 
-     $stmt->bindValue(':topic_id', $data['topic_id']);
+     $stmt->bindValue(':id', $data['id']);
      $stmt->bindValue(':subject', $data['subject']);
      $stmt->bindValue(':message', $data['message']);
      $stmt->bindValue(':author', $data['author']);
@@ -320,7 +320,7 @@ function createTopic($db, $data) {
             echo json_encode([
         'success' => true,
         'message' => 'Topic created successfully',
-        'topic_id' => $data['topic_id']
+        'id' => $data['id']
     ]);
     http_response_code(201); // Created
 } else {echo json_encode([
@@ -345,20 +345,20 @@ function updateTopic($db, $data) {
     // TODO: Validate that topic_id is provided
     // If not provided, return error with 400 status
 
-    if (empty($data['topic_id'])) {
+    if (empty($data['id'])) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
-        'message' => 'topic_id is required'
+        'message' => 'id is required'
     ]);
     return;}
-     $topicId = $data['topic_id'];
+     $topicId = $data['id'];
 
     // TODO: Check if topic exists
     // Prepare and execute a SELECT query
     // If not found, return error with 404 status
-    $checkStmt = $db->prepare("SELECT * FROM topics WHERE topic_id = :topic_id");
-    $checkStmt->execute([':topic_id' => $topicId]);
+    $checkStmt = $db->prepare("SELECT * FROM topics WHERE id = :id");
+    $checkStmt->execute([':id' => $topicId]);
     $topic = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
    if (!$topic) {
@@ -373,7 +373,7 @@ function updateTopic($db, $data) {
     // TODO: Build UPDATE query dynamically based on provided fields
     // Only update fields that are provided in the request
     $updates = [];
-$params = [':topic_id' => $topicId];
+    $params = [':id' => $topicId];
 
 if (!empty($data['subject'])) {
     $updates[] = 'subject = :subject';
@@ -400,7 +400,7 @@ if (!empty($data['message'])) {
     
     // TODO: Complete the UPDATE query
 
-    $sql = "UPDATE topics SET " . implode(', ', $updates) . " WHERE topic_id = :topic_id";
+    $sql = "UPDATE topics SET " . implode(', ', $updates) . " WHERE id = :id";
 
     // TODO: Prepare statement and bind parameters
     // Bind all parameters from the $params array
@@ -462,9 +462,9 @@ function deleteTopic($db, $topicId) {
     // If not found, return error with 404 status$checkSql = "SELECT topic_id FROM topics WHERE topic_id = :topic_id LIMIT 1";
 
     
-     $checkSql = "SELECT topic_id FROM topics WHERE topic_id = :topic_id LIMIT 1";
+     $checkSql = "SELECT id FROM topics WHERE id = :id LIMIT 1";
      $stmtCheck = $db->prepare($checkSql);
-     $stmtCheck->bindValue(':topic_id', $topicId);
+     $stmtCheck->bindValue(':id', $topicId);
      $stmtCheck->execute();
      $existingTopic = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
@@ -481,20 +481,20 @@ function deleteTopic($db, $topicId) {
     // TODO: Delete associated replies first (foreign key constraint)
     // Prepare DELETE query for replies table
 
-    $deleteRepliesSql = "DELETE FROM replies WHERE topic_id = :topic_id";
+    $deleteRepliesSql = "DELETE FROM replies WHERE topic_id = :id";
     $stmtReplies = $db->prepare($deleteRepliesSql);
-    $stmtReplies->bindValue(':topic_id', $topicId);
+    $stmtReplies->bindValue(':id', $topicId);
     $stmtReplies->execute();
 
     
     // TODO: Prepare DELETE query for the topic
-        $deleteTopicSql = "DELETE FROM topics WHERE topic_id = :topic_id";
+        $deleteTopicSql = "DELETE FROM topics WHERE id = :id";
         $stmtDelete = $db->prepare($deleteTopicSql);
 
     
     // TODO: Prepare, bind, and execute
 
-     $stmtDelete->bindValue(':topic_id', $topicId);
+     $stmtDelete->bindValue(':id', $topicId);
      $stmtDelete->execute();
 
     
@@ -529,10 +529,10 @@ function deleteTopic($db, $topicId) {
  * Query Parameters:
  *   - topic_id: The topic's unique identifier
  */
-function getRepliesByTopicId($db, $topicId) {
+function getRepliesByTopicId($db, $id) {
     // TODO: Validate that topicId is provided
     // If not provided, return error with 400 status
-        if (empty($topicId)) {
+        if (empty($id)) {
         http_response_code(400);
         echo json_encode([
             'success' => false,
@@ -546,7 +546,7 @@ function getRepliesByTopicId($db, $topicId) {
     // Select reply_id, topic_id, text, author, and created_at (formatted as date)
     // Order by created_at ASC (oldest first)
         $sql = "SELECT 
-                reply_id, 
+                id, 
                 topic_id, 
                 text, 
                 author, 
@@ -557,7 +557,7 @@ function getRepliesByTopicId($db, $topicId) {
     
     // TODO: Prepare and bind the topic_id parameter
      $stmt = $db->prepare($sql);
-     $stmt->bindValue(':topic_id', $topicId);
+     $stmt->bindValue(':topic_id', $id);
     // TODO: Execute the query
             $stmt->execute();
     // TODO: Fetch all results as an associative array
@@ -586,7 +586,7 @@ function createReply($db, $data) {
     // TODO: Validate required fields
     // Check if reply_id, topic_id, text, and author are provided
     // If any field is missing, return error with 400 status
-        $requiredFields = ['reply_id', 'topic_id', 'text', 'author'];
+        $requiredFields = ['id', 'topic_id', 'text', 'author'];
     foreach ($requiredFields as $field) {
         if (empty($data[$field])) {
             http_response_code(400);
@@ -600,7 +600,7 @@ function createReply($db, $data) {
     
     // TODO: Sanitize input data
     // Trim whitespace from all fields
-        $reply_id = trim($data['reply_id']);
+        $id = trim($data['id']);
         $topic_id = trim($data['topic_id']);
         $text = trim($data['text']);
         $author = trim($data['author']);
@@ -622,8 +622,8 @@ function createReply($db, $data) {
     // TODO: Check if reply_id already exists
     // Prepare and execute SELECT query to check for duplicate
     // If duplicate found, return error with 409 status
-     $stmtCheck = $db->prepare("SELECT reply_id FROM replies WHERE reply_id = :reply_id");
-    $stmtCheck->bindValue(':reply_id', $reply_id);
+     $stmtCheck = $db->prepare("SELECT id FROM replies WHERE id = :id");
+    $stmtCheck->bindValue(':id', $id);
     $stmtCheck->execute();
     if ($stmtCheck->fetch(PDO::FETCH_ASSOC)) {
         http_response_code(409);
@@ -636,12 +636,12 @@ function createReply($db, $data) {
     
     // TODO: Prepare INSERT query
     // Insert reply_id, topic_id, text, and author
-     $sql = "INSERT INTO replies (reply_id, topic_id, text, author, created_at) 
-            VALUES (:reply_id, :topic_id, :text, :author, NOW())";
+     $sql = "INSERT INTO replies (id, topic_id, text, author, created_at) 
+            VALUES (:id, :topic_id, :text, :author, NOW())";
     
     // TODO: Prepare statement and bind parameters
     $stmt = $db->prepare($sql);
-    $stmt->bindValue(':reply_id', $reply_id);
+    $stmt->bindValue(':id', $id);
     $stmt->bindValue(':topic_id', $topic_id);
     $stmt->bindValue(':text', $text);
     $stmt->bindValue(':author', $author);
@@ -658,7 +658,7 @@ function createReply($db, $data) {
         echo json_encode([
             'success' => true,
             'message' => 'Reply created successfully',
-            'reply_id' => $reply_id
+            'id' => $id
         ]);
     } else {
         http_response_code(500);
@@ -685,16 +685,16 @@ function deleteReply($db, $replyId) {
         http_response_code(400);
         echo json_encode([
             'success' => false,
-            'message' => 'reply_id is required'
-        ]);
+            'message' => 'id is required'
+         ]);
         return;
     }
     
     // TODO: Check if reply exists
     // Prepare and execute SELECT query
     // If not found, return error with 404 status
-    $stmtCheck = $db->prepare("SELECT reply_id FROM replies WHERE reply_id = :reply_id");
-    $stmtCheck->bindValue(':reply_id', $replyId);
+    $stmtCheck = $db->prepare("SELECT id FROM replies WHERE id = :id");
+    $stmtCheck->bindValue(':id', $replyId);
     $stmtCheck->execute();
     $reply = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
@@ -709,11 +709,11 @@ function deleteReply($db, $replyId) {
 
     
     // TODO: Prepare DELETE query
-        $sql = "DELETE FROM replies WHERE reply_id = :reply_id";
+        $sql = "DELETE FROM replies WHERE id = :id";
 
     // TODO: Prepare, bind, and execute
      $stmtDelete = $db->prepare($sql);
-    $stmtDelete->bindValue(':reply_id', $replyId);
+    $stmtDelete->bindValue(':id', $replyId );
     $executed = $stmtDelete->execute();
     
     // TODO: Check if delete was successful
@@ -727,10 +727,10 @@ function deleteReply($db, $replyId) {
         ]);
     } else {
         http_response_code(500);
-        echo json_encode(
+        echo json_encode([
             'success' => false,
             'message' => 'Failed to delete reply'
-        );
+        ]);
     }
 }
 
@@ -819,7 +819,7 @@ try {
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'reply_id is required'
+                    'message' => 'id is required'
                 ]);
                 exit();
             }
