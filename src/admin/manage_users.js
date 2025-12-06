@@ -1,185 +1,270 @@
-<!--
-  Requirement: Create a Responsive Admin Portal
+/*
+  Requirement: Add interactivity and data management to the Admin Portal.
 
   Instructions:
-  Fill in the HTML elements as described in the comments.
-  Use the provided IDs for the elements that require them.
-  Focus on creating a clear and semantic HTML structure.
--->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
-    <meta charset="UTF-8" />
+  1. Link this file to your HTML using a <script> tag with the 'defer' attribute.
+     Example: <script src="manage_users.js" defer></script>
+  2. Implement the JavaScript functionality as described in the TODO comments.
+  3. All data management will be done by fetching/manipulating data from the PHP backend.
+*/
 
-    <!-- TODO: Add the responsive 'viewport' meta tag. -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+// --- Global Data Store ---
+// TODO: This array will hold the student data fetched from the backend.
+let students = [];
 
-    <!-- TODO: Add a 'title' for the page, e.g., "Admin Portal". -->
-    <title>Admin Portal</title>
+// --- Element Selections ---
+// TODO: Select elements after the DOM is parsed (using defer)
 
-    <!-- TODO: Link to a CSS file or a CSS framework. -->
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
-</head>
-<body>
+// TODO: Select the student table body (tbody)
+const studentTableBody = document.querySelector("#student-table tbody");
 
-    <!-- TODO: Create a 'header' element for the top of the page. -->
-        <!-- TODO: Inside the header, add a main heading (e.g., 'h1') with the text "Admin Portal". -->
-        <header>
-            <h1>Admin Portal</h1>
-        </header>
-    <!-- End of the header. -->
+// TODO: Select the "Add Student" form
+const addStudentForm = document.querySelector("#add-student-form");
 
-    <!-- TODO: Create a 'main' element to hold the primary content of the portal. -->
-    <main>
+// TODO: Select the "Change Password" form
+const changePasswordForm = document.querySelector("#password-form");
 
-        <!-- Section 1: Password Management -->
-        <!-- TODO: Create a 'section' for the password management functionality. -->
-        <section id="password-management">
-            <!-- TODO: Add a sub-heading (e.g., 'h2') with the text "Change Your Password". -->
-            <h2>Change Your Password</h2>
+// TODO: Select the search input field
+const searchInput = document.querySelector("#search-input");
 
-            <!-- TODO: Create a 'form' for changing the password. The 'action' can be '#'. -->
-            <form action="#" method="post">
-                <!-- TODO: Use a 'fieldset' to group the password-related fields. -->
-                <fieldset>
-                    <!-- TODO: Add a 'legend' for the fieldset, e.g., "Password Update". -->
-                    <legend>Password Update</legend>
+// TODO: Select all table header (th) elements in thead
+const tableHeaders = document.querySelectorAll("#student-table thead th");
 
-                    <!-- TODO: Add a 'label' for the current password input. 'for' should be "current-password". -->
-                    <label for="current-password">Current Password:</label>
-                    <!-- TODO: Add an 'input' for the current password. -->
-                    <input type="password" id="current-password" required>
+// --- Functions ---
 
-                    <!-- TODO: Add a 'label' for the new password input. 'for' should be "new-password". -->
-                    <label for="new-password">New Password:</label>
-                    <!-- TODO: Add an 'input' for the new password. -->
-                    <input type="password" id="new-password" minlength="8" required>
+/**
+ * TODO: Create a <tr> for a student
+ * Input: student object {name, id, email}
+ * Output: <tr> element with cells and Edit/Delete buttons
+ */
+function createStudentRow(student) {
+  const tr = document.createElement("tr");
 
-                    <!-- TODO: Add a 'label' for the confirm password input. 'for' should be "confirm-password". -->
-                    <label for="confirm-password">Confirm New Password:</label>
-                    <!-- TODO: Add an 'input' to confirm the new password. -->
-                    <input type="password" id="confirm-password" required>
+  const tdName = document.createElement("td");
+  tdName.textContent = student.name;
+  tr.appendChild(tdName);
 
-                    <!-- TODO: Add a 'button' to submit the form. -->
-                    <button type="submit" id="change">Update Password</button>
+  const tdId = document.createElement("td");
+  tdId.textContent = student.id;
+  tr.appendChild(tdId);
 
-                <!-- End of the fieldset. -->
-                </fieldset>
-            <!-- End of the password form. -->
-            </form>
-        </section>
-        <!-- End of the password management section. -->
+  const tdEmail = document.createElement("td");
+  tdEmail.textContent = student.email;
+  tr.appendChild(tdEmail);
 
+  const tdActions = document.createElement("td");
 
-        <!-- Section 2: Student Management -->
-        <!-- TODO: Create another 'section' for the student management functionality. -->
-        <section id="student-management">
-            <!-- TODO: Add a sub-heading (e.g., 'h2') with the text "Manage Students". -->
-            <h2>Manage Students</h2>
+  // TODO: Edit button
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.classList.add("edit-btn");
+  editBtn.dataset.id = student.id;
+  tdActions.appendChild(editBtn);
 
-            <!-- Subsection 2.1: Add New Student Form -->
-            <!-- TODO: Create a 'details' element so the "Add Student" form can be collapsed. -->
-            <details>
-                <!-- TODO: Add a 'summary' element inside 'details' with the text "Add New Student". -->
-                <summary>Add New Student</summary>
+  // TODO: Delete button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.classList.add("delete-btn");
+  deleteBtn.dataset.id = student.id;
+  tdActions.appendChild(deleteBtn);
 
-                <!-- TODO: Create a 'form' for adding a new student. 'action' can be '#'. -->
-                <form action="#" method="post">
-                    <!-- TODO: Use a 'fieldset' to group the new student fields. -->
-                    <fieldset>
-                        <!-- TODO: Add a 'legend' for the fieldset, e.g., "New Student Information". -->
-                        <legend>New Student Information</legend>
+  tr.appendChild(tdActions);
 
-                        <!-- TODO: Add a 'label' and 'input' for the student's full name. -->
-                        <label for="student-name">Full Name:</label>
-                        <input type="text" id="student-name" required>
+  return tr;
+}
 
-                        <!-- TODO: Add a 'label' and 'input' for the student's ID. -->
-                        <label for="student-id">Student ID:</label>
-                        <input type="text" id="student-id" required>
+/**
+ * TODO: Render table rows based on provided student array
+ */
+function renderTable(studentArray) {
+  studentTableBody.innerHTML = "";
+  studentArray.forEach(student => {
+    studentTableBody.appendChild(createStudentRow(student));
+  });
+}
 
-                        <!-- TODO: Add a 'label' and 'input' for the student's email. -->
-                        <label for="student-email">Email:</label>
-                        <input type="email" id="student-email" required>
+/**
+ * TODO: Handle password change form
+ */
+function handleChangePassword(event) {
+  event.preventDefault();
 
-                        <!-- TODO: Add a 'label' and 'input' for the default password. -->
-                        <label for="default-password">Default Password:</label>
-                        <input type="text" id="default-password" value="password123">
+  const student_id = document.querySelector("#student-id-pw").value.trim();
+  const current_password = document.querySelector("#current-password").value;
+  const new_password = document.querySelector("#new-password").value;
+  const confirm = document.querySelector("#confirm-password").value;
 
-                        <!-- TODO: Add a 'button' to submit the form. -->
-                        <button type="submit" id="add">Add Student</button>
+  // TODO: Validation
+  if (new_password !== confirm) {
+    alert("Passwords do not match.");
+    return;
+  }
 
-                    <!-- End of the fieldset. -->
-                    </fieldset>
-                <!-- End of the add student form. -->
-                </form>
-            <!-- End of the 'details' element. -->
-            </details>
+  if (new_password.length < 8) {
+    alert("Password must be at least 8 characters.");
+    return;
+  }
 
+  // TODO: Send password update to PHP backend
+  fetch(`students.php?action=change_password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ student_id, current_password, new_password })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Password updated successfully!");
+      } else {
+        alert("Error: " + data.error);
+      }
+      document.querySelector("#current-password").value = "";
+      document.querySelector("#new-password").value = "";
+      document.querySelector("#confirm-password").value = "";
+    })
+    .catch(err => console.error(err));
+}
 
-            <!-- Subsection 2.2: Student List -->
-            <!-- TODO: Add a sub-heading (e.g., 'h3') for the list of students, "Registered Students". -->
-            <h3>Registered Students</h3>
+/**
+ * TODO: Handle Add Student form submission
+ */
+function handleAddStudent(event) {
+  event.preventDefault();
 
-            <!-- TODO: Create a 'table' to display the list of students. Give it an id="student-table". -->
-            <table id="student-table">
-                <!-- TODO: Create a 'thead' for the table headers. -->
-                <thead>
-                    <!-- TODO: Create a 'tr' (table row) inside the 'thead'. -->
-                    <tr>
-                        <!-- TODO: Create 'th' (table header) cells for "Name", "Student ID", "Email", and "Actions". -->
-                        <th>Name</th>
-                        <th>Student ID</th>
-                        <th>Email</th>
-                        <th>Actions</th>
-                    </tr>
-                    <!-- End of the row. -->
-                </thead>
-                <!-- End of 'thead'. -->
+  const name = document.querySelector("#student-name").value.trim();
+  const id = document.querySelector("#student-id").value.trim();
+  const email = document.querySelector("#student-email").value.trim();
+  const password = document.querySelector("#default-password").value.trim();
 
-                <!-- TODO: Create a 'tbody' for the table body, where student data will go. -->
-                <tbody>
-                    <!-- TODO: For now, add 2-3 rows of dummy data so you can see how the table is structured. -->
-                    <tr>
-                        <td>John Doe</td>
-                        <td>12345</td>
-                        <td>john.doe@example.com</td>
-                        <td>
-                            <!-- TODO: Add an "Edit" button. -->
-                            <button>Edit</button>
-                            <!-- TODO: Add a "Delete" button. -->
-                            <button>Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jane Smith</td>
-                        <td>67890</td>
-                        <td>jane.smith@example.com</td>
-                        <td>
-                            <button>Edit</button>
-                            <button>Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Michael Lee</td>
-                        <td>54321</td>
-                        <td>michael.lee@example.com</td>
-                        <td>
-                            <button>Edit</button>
-                            <button>Delete</button>
-                        </td>
-                    </tr>
-                </tbody>
-                <!-- End of 'tbody'. -->
-            </table>
-            <!-- End of the table. -->
+  // TODO: Validate inputs
+  if (!name || !id || !email || !password) {
+    alert("Please fill out all required fields.");
+    return;
+  }
 
-        <!-- End of the student management section. -->
-        </section>
+  // TODO: Send new student to PHP backend
+  fetch("students.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ student_id: id, name, email, password })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        loadStudents(); // reload table after adding
+      } else {
+        alert("Error: " + data.error);
+      }
+      document.querySelector("#student-name").value = "";
+      document.querySelector("#student-id").value = "";
+      document.querySelector("#student-email").value = "";
+      document.querySelector("#default-password").value = "password123";
+    })
+    .catch(err => console.error(err));
+}
 
-    <!-- End of the main content area. -->
-    </main>
+/**
+ * TODO: Handle Edit/Delete clicks on table using event delegation
+ */
+function handleTableClick(event) {
+  const target = event.target;
 
-</body>
-</html>
+  // TODO: Delete student
+  if (target.classList.contains("delete-btn")) {
+    const studentId = target.dataset.id;
+    fetch(`students.php?student_id=${studentId}`, { method: "DELETE" })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          loadStudents();
+        } else {
+          alert("Error: " + data.error);
+        }
+      })
+      .catch(err => console.error(err));
+  }
+
+  // TODO: Edit student
+  if (target.classList.contains("edit-btn")) {
+    const studentId = target.dataset.id;
+    const student = students.find(s => s.id === studentId);
+    if (student) {
+      const newName = prompt("Enter new name:", student.name);
+      const newEmail = prompt("Enter new email:", student.email);
+      if (newName && newEmail) {
+        fetch("students.php", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ student_id: studentId, name: newName, email: newEmail })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) loadStudents();
+            else alert("Error: " + data.error);
+          })
+          .catch(err => console.error(err));
+      }
+    }
+  }
+}
+
+/**
+ * TODO: Search students by name
+ */
+function handleSearch(event) {
+  const term = searchInput.value.toLowerCase();
+  if (!term) renderTable(students);
+  else renderTable(students.filter(s => s.name.toLowerCase().includes(term)));
+}
+
+/**
+ * TODO: Sort table when headers clicked
+ */
+function handleSort(event) {
+  const index = event.currentTarget.cellIndex;
+  let prop;
+  switch (index) {
+    case 0: prop = "name"; break;
+    case 1: prop = "id"; break;
+    case 2: prop = "email"; break;
+    default: return;
+  }
+
+  const currentDir = event.currentTarget.dataset.sortDir || "asc";
+  const newDir = currentDir === "asc" ? "desc" : "asc";
+  event.currentTarget.dataset.sortDir = newDir;
+
+  students.sort((a, b) => {
+    if (prop === "id") return newDir === "asc" ? a.id - b.id : b.id - a.id;
+    return newDir === "asc" ? a[prop].localeCompare(b[prop]) : b[prop].localeCompare(a[prop]);
+  });
+
+  renderTable(students);
+}
+
+/**
+ * TODO: Load students from PHP backend
+ */
+async function loadStudents() {
+  try {
+    const response = await fetch("students.php");
+    students = await response.json();
+    renderTable(students);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * TODO: Initialize event listeners
+ */
+function initialize() {
+  changePasswordForm.addEventListener("submit", handleChangePassword);
+  addStudentForm.addEventListener("submit", handleAddStudent);
+  studentTableBody.addEventListener("click", handleTableClick);
+  searchInput.addEventListener("input", handleSearch);
+  tableHeaders.forEach(th => th.addEventListener("click", handleSort));
+}
+
+// --- Initial Page Load ---
+loadStudents().then(initialize);
