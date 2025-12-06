@@ -80,7 +80,7 @@ if (strlen($password) < 8) {
 // For demonstration, we use JSON as mock database instead
 try {
    // TODO: Wrap database operations in a try-catch block to handle PDO exceptions
-   $usersJson = file_get_contents('../auth/students.json'); // Your JSON file
+   $usersJson = file_get_contents('../students.json'); // Your JSON file
    $users = json_decode($usersJson, true);
    // --- Prepare SQL Query ---
    // TODO: Write a SQL SELECT query to find the user by email
@@ -117,7 +117,8 @@ try {
        // NOTE: This assumes passwords are stored as hashes using password_hash()
        // Never store passwords in plain text!
        // For demo purposes, we assume password is "password123" for all users
-       if (password_verify($password, password_hash("password123", PASSWORD_DEFAULT))) {
+      $correctPassword = "password123";
+if ($password === $correctPassword) {
            // --- Handle Successful Authentication ---
            // TODO: If password verification succeeds:
            // TODO: Store user information in session variables

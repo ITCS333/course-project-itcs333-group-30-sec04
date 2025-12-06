@@ -22,6 +22,12 @@ let currentReplies = []; // Will hold replies for *this* topic
 
 // --- Element Selections ---
 // TODO: Select all the elements you added IDs for in step 2.
+const topicSubject = document.querySelector('#topic-subject');
+const opMessage = document.querySelector('#op-message');
+const opFooter = document.querySelector('#op-footer');
+const replyListContainer = document.querySelector('#reply-list-container');
+const replyForm = document.querySelector('#reply-form');
+const newReplyText = document.querySelector('#new-reply'); 
 
 // --- Functions ---
 
@@ -34,6 +40,8 @@ let currentReplies = []; // Will hold replies for *this* topic
  */
 function getTopicIdFromURL() {
   // ... your implementation here ...
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get("id");
 }
 
 /**
@@ -47,7 +55,12 @@ function getTopicIdFromURL() {
  */
 function renderOriginalPost(topic) {
   // ... your implementation here ...
+  topicSubject.textContent = topic.subject;
+  opMessage.textContent = topic.message;
+  opFooter.textContent = `Posted by: ${topic.author} on ${topic.date}`;
 }
+
+
 
 /**
  * TODO: Implement the createReplyArticle function.
@@ -59,6 +72,27 @@ function renderOriginalPost(topic) {
  */
 function createReplyArticle(reply) {
   // ... your implementation here ...
+  const article=document.createElement('article');
+  article.classList.add('reply');
+
+  const p = document.createElement('p');
+  p.textContent = reply.text;
+  article.appendChild(p);
+
+  const footer = document.createElement('footer');
+  footer.textContent = `Posted by: ${reply.author} on ${reply.date}`;
+  article.appendChild(footer);
+
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'reply-actions';
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.classList.add('delete-reply-btn');
+  deleteBtn.setAttribute('data-id', reply.id);
+  deleteBtn.textContent = 'Delete';
+  actionsDiv.appendChild(deleteBtn);
+  article.appendChild(actionsDiv);
+  return article;
 }
 
 /**
@@ -71,7 +105,15 @@ function createReplyArticle(reply) {
  */
 function renderReplies() {
   // ... your implementation here ...
+  
+  replyListContainer.innerHTML = '';
+  currentReplies.forEach(reply => {
+    const article = createReplyArticle(reply);
+    replyListContainer.appendChild(article);
+  });
 }
+
+
 
 /**
  * TODO: Implement the handleAddReply function.
@@ -93,6 +135,20 @@ function renderReplies() {
  */
 function handleAddReply(event) {
   // ... your implementation here ...
+  event.preventDefault();
+  const text = newReplyText.value.trim();
+  if (!text) return;
+
+  const newReply = {
+    id: `reply_${Date.now()}`,
+    author: 'Student',
+    date: new Date().toISOString().split('T')[0],
+    text: text
+  };
+
+  currentReplies.push(newReply);
+  renderReplies();
+  newReplyText.value = '';
 }
 
 /**
@@ -107,6 +163,11 @@ function handleAddReply(event) {
  */
 function handleReplyListClick(event) {
   // ... your implementation here ...
+    if (event.target.classList.contains('delete-reply-btn')) {
+    const id = event.target.getAttribute('data-id');
+    currentReplies = currentReplies.filter(reply => reply.id !== id);
+    renderReplies();
+  }
 }
 
 /**
@@ -127,8 +188,43 @@ function handleReplyListClick(event) {
  * - Add the 'click' event listener to `replyListContainer` (calls `handleReplyListClick`).
  * 8. If the topic is not found, display an error in `topicSubject`.
  */
+
+
+
 async function initializePage() {
   // ... your implementation here ...
+   currentTopicId = getTopicIdFromURL();
+  if (!currentTopicId) {
+    topicSubject.textContent = "Topic not found.";
+    return;
+  }
+
+  try {
+    const [topicsResp, repliesResp] = await Promise.all([
+      fetch('topics.json'),
+      fetch('comments.json')
+    ]);
+
+    const topics = await topicsResp.json();
+    const repliesData = await repliesResp.json();
+
+    const topic = topics.find(t => t.id === currentTopicId);
+    currentReplies = repliesData[currentTopicId] || [];
+
+    if (!topic) {
+      topicSubject.textContent = "Topic not found.";
+      return;
+    }
+
+    renderOriginalPost(topic);
+    renderReplies();
+
+    replyForm.addEventListener('submit', handleAddReply);
+    replyListContainer.addEventListener('click', handleReplyListClick);
+
+  } catch (error) {
+    console.error('Error loading topic or replies', error);
+  }
 }
 
 // --- Initial Page Load ---

@@ -8,70 +8,132 @@
 <html lang="en">
 <head>
     <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
-    
+    <meta charset="UTF-8" >
     <!-- TODO: Add the responsive 'viewport' meta tag. -->
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- TODO: Add a title, e.g., "Discussion Board". -->
-
+     <title>General Discussion Board</title>
     <!-- TODO: Link to your CSS framework or stylesheet. -->
+     <link rel="stylesheet" href="styles.css">
+     <script src="board.js" defer></script>
+
 </head>
 <body>
 
     <!-- TODO: Create a 'header' with a main heading ('h1') "General Discussion Board". -->
-
+    <header>
+        <h1>General Discussion Board</h1>
+    </header>
     <!-- TODO: Create the 'main' content area. -->
-
+      <main>  
         <!-- Section 1: Create a New Topic -->
         <!-- TODO: Create a 'section' for the "new topic" form. -->
+         <section id="new-topic-section"> 
             <!-- TODO: Add a sub-heading ('h2') "Start a New Topic". -->
-
+              <h2>Start a New Topic</h2>
             <!-- TODO: Create a 'form' with an id "new-topic-form". Action can be '#'. -->
+             <form id = "new-topic-form" action="#" >
                 <!-- TODO: Use a 'fieldset' to group the form controls. -->
+                 <fieldset>
                     <!-- TODO: Add a 'legend', e.g., "New Topic Details". -->
-
+                      <legend>New Topic Details </legend>
                     <!-- TODO: Add a 'label' and 'input' for the topic subject.
                          - label 'for': "topic-subject"
                          - input 'id': "topic-subject", type="text", required -->
+                         
+                            <label for="topic-subject"> Topic Subject:</label><br>
+                            <input id="topic-subject" type="text" required><br>
+                         
 
                     <!-- TODO: Add a 'label' and 'textarea' for the main message.
                          - label 'for': "topic-message"
                          - textarea 'id': "topic-message", rows="6", required -->
+                         
+                          <label for="topic-message">Main Message:</label><br>
+                          <textarea id="topic-message" rows="6" required></textarea><br>
+                         
 
                     <!-- TODO: Add a 'button' to submit the form.
                          - id="create-topic", type="submit", Text: "Create Topic" -->
+                         <button id="create-topic" type="submit">Create Topic</button>
                 <!-- End of fieldset. -->
+                </fieldset>
             <!-- End of form. -->
+            </form>
         <!-- End of form section. -->
+        </section>
 
 
         <!-- Section 2: Existing Topics -->
         <!-- TODO: Create a 'section' to display the list of current topics. -->
+         <section id="topics-list-section">
             <!-- TODO: Add a sub-heading ('h2') "All Topics". -->
-            
+            <h2>All Topics</h2>
             <!-- TODO: Add a container (like a 'div') to hold the list of topics. -->
+             <div id="topic-list-container" >
                 <!-- TODO: Add 2-3 dummy topics using the structure below. -->
 
                 <!-- Example Topic 1: -->
                 <!-- TODO: Use an 'article' for each topic. -->
+                 <article class="topic">
                     <!-- TODO: Add a heading ('h3') containing an anchor tag ('a') linking to the detail page.
                          - The link's 'href' can be "topic-detail.html" for now.
                          - The link text should be a dummy topic title, e.g., "Question about CSS Flexbox". -->
-                    
+                          <h3><a href="topic.html?id=topic_1">Question about CSS Flexbox</a></h3>
                     <!-- TODO: Use a 'footer' element for metadata. -->
+                     <footer>
                         <!-- TODO: Add text like "Posted by: Student Name on YYYY-MM-DD". -->
+                         Posted by: Student A on 2025-10-11
                     <!-- End of footer. -->
+                    </footer>
 
                     <!-- TODO: Add a container (e.g., a 'div') for action buttons. -->
+                     <div class="topic-action">
                         <!-- TODO: Add an "Edit" button/link. -->
+                         <button class="edit-btn">Edit</button>
                         <!-- TODO: Add a "Delete" button/link. -->
+                         <button class="delete-btn" data-id="topic_1">Delete</button>
                         <!-- NOTE: For the exercise, you can add these for all topics. In a real app,
                              these buttons would only be visible to the topic's author or the admin. -->
                     <!-- End of actions container. -->
+                    </div>
                 <!-- End of article. -->
-            
-            <!-- End of topics container. -->
-        <!-- End of list section. -->
+                 </article>
+                <!-- Example Topic 2 -->
+                <article class="topic">
+                    <h3><a href="topic.html?id=topic_2">How to connect PHP with MySQL?</a></h3>
+                    <footer>
+                        Posted by: Student B on 2025-10-03
+                    </footer>
+                    <div class="topic-action">
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn" data-id="topic_2">Delete</button>
+                    </div>
+                </article>
 
+                <!-- Example Topic 3 -->
+                <article class="topic">
+                    <h3><a href="topic.html?id=topic_3">Best practices for JavaScript forms</a></h3>
+                    <footer>
+                        Posted by: Student C on 2025-10-05
+                    </footer>
+                    <div class="topic-action">
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn" data-id="topic_3">Delete</button>
+                    </div>
+                </article>
+
+    
+
+            
+
+
+
+            <!-- End of topics container. -->
+            </div>
+        <!-- End of list section. -->
+        </section>
     <!-- End of main. -->
+    </main>
 </body>
 </html>
