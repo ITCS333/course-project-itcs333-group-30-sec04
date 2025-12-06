@@ -1,144 +1,301 @@
-<!--
-  Requirement: Create a Responsive Admin Portal
+/*
+  Requirement: Add interactivity and data management to the Admin Portal.
 
   Instructions:
-  Fill in the HTML elements as described in the comments.
-  Use the provided IDs for the elements that require them.
-  Focus on creating a clear and semantic HTML structure.
--->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
+  1. Link this file to your HTML using a <script> tag with the 'defer' attribute.
+     Example: <script src="manage_users.js" defer></script>
+  2. Implement the JavaScript functionality as described in the TODO comments.
+  3. All data management will be done by manipulating the 'students' array
+     and re-rendering the table.
+*/
 
-    <!-- TODO: Add the responsive 'viewport' meta tag. -->
+// --- Global Data Store ---
+// This array will be populated with data fetched from 'students.json'.
+let students = [];
 
-    <!-- TODO: Add a 'title' for the page, e.g., "Admin Portal". -->
+// --- Element Selections ---
+// We can safely select elements here because 'defer' guarantees
+// the HTML document is parsed before this script runs.
 
-    <!-- TODO: Link to a CSS file or a CSS framework. -->
+// TODO: Select the student table body (tbody).
+const studentTableBody = document.querySelector("#student-table tbody");
 
-</head>
-<body>
+// TODO: Select the "Add Student" form.
+// (You'll need to add id="add-student-form" to this form in your HTML).
+const addStudentForm = document.querySelector("#add-student-form");
 
-    <!-- TODO: Create a 'header' element for the top of the page. -->
-        <!-- TODO: Inside the header, add a main heading (e.g., 'h1') with the text "Admin Portal". -->
-    <!-- End of the header. -->
+// TODO: Select the "Change Password" form.
+// (You'll need to add id="password-form" to this form in your HTML).
+const changePasswordForm = document.querySelector("#password-form");
 
-    <!-- TODO: Create a 'main' element to hold the primary content of the portal. -->
+// TODO: Select the search input field.
+// (You'll need to add id="search-input" to this input in your HTML).
+const searchInput = document.querySelector("#search-input");
 
-        <!-- Section 1: Password Management -->
-        <!-- TODO: Create a 'section' for the password management functionality. -->
-            <!-- TODO: Add a sub-heading (e.g., 'h2') with the text "Change Your Password". -->
+// TODO: Select all table header (th) elements in thead.
+const tableHeaders = document.querySelectorAll("#student-table thead th");
 
-            <!-- TODO: Create a 'form' for changing the password. The 'action' can be '#'. -->
-                <!-- TODO: Use a 'fieldset' to group the password-related fields. -->
-                    <!-- TODO: Add a 'legend' for the fieldset, e.g., "Password Update". -->
+// --- Functions ---
 
-                    <!-- TODO: Add a 'label' for the current password input. 'for' should be "current-password". -->
-                    <!-- TODO: Add an 'input' for the current password.
-                         - type="password"
-                         - id="current-password"
-                         - required -->
+/**
+ * TODO: Implement the createStudentRow function.
+ * This function should take a student object {name, id, email} and return a <tr> element.
+ * The <tr> should contain:
+ * 1. A <td> for the student's name.
+ * 2. A <td> for the student's ID.
+ * 3. A <td> for the student's email.
+ * 4. A <td> containing two buttons:
+ * - An "Edit" button with class "edit-btn" and a data-id attribute set to the student's ID.
+ * - A "Delete" button with class "delete-btn" and a data-id attribute set to the student's ID.
+ */
+function createStudentRow(student) {
+  const tr = document.createElement("tr");
 
-                    <!-- TODO: Add a 'label' for the new password input. 'for' should be "new-password". -->
-                    <!-- TODO: Add an 'input' for the new password.
-                         - type="password"
-                         - id="new-password"
-                         - minlength="8"
-                         - required -->
+  const tdName = document.createElement("td");
+  tdName.textContent = student.name;
+  tr.appendChild(tdName);
 
-                    <!-- TODO: Add a 'label' for the confirm password input. 'for' should be "confirm-password". -->
-                    <!-- TODO: Add an 'input' to confirm the new password.
-                         - type="password"
-                         - id="confirm-password"
-                         - required -->
+  const tdId = document.createElement("td");
+  tdId.textContent = student.id;
+  tr.appendChild(tdId);
 
-                    <!-- TODO: Add a 'button' to submit the form.
-                         - type="submit"
-                         - id="change"
-                         - Text: "Update Password" -->
+  const tdEmail = document.createElement("td");
+  tdEmail.textContent = student.email;
+  tr.appendChild(tdEmail);
 
-                <!-- End of the fieldset. -->
-            <!-- End of the password form. -->
-        <!-- End of the password management section. -->
+  const tdActions = document.createElement("td");
 
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.classList.add("edit-btn");
+  editBtn.dataset.id = student.id;
+  tdActions.appendChild(editBtn);
 
-        <!-- Section 2: Student Management -->
-        <!-- TODO: Create another 'section' for the student management functionality. -->
-            <!-- TODO: Add a sub-heading (e.g., 'h2') with the text "Manage Students". -->
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.classList.add("delete-btn");
+  deleteBtn.dataset.id = student.id;
+  tdActions.appendChild(deleteBtn);
 
-            <!-- Subsection 2.1: Add New Student Form -->
-            <!-- TODO: Create a 'details' element so the "Add Student" form can be collapsed. -->
-                <!-- TODO: Add a 'summary' element inside 'details' with the text "Add New Student". -->
+  tr.appendChild(tdActions);
 
-                <!-- TODO: Create a 'form' for adding a new student. 'action' can be '#'. -->
-                    <!-- TODO: Use a 'fieldset' to group the new student fields. -->
-                        <!-- TODO: Add a 'legend' for the fieldset, e.g., "New Student Information". -->
+  return tr;
+}
 
-                        <!-- TODO: Add a 'label' and 'input' for the student's full name.
-                             - label 'for': "student-name"
-                             - input 'id': "student-name"
-                             - input 'type': "text"
-                             - input: required -->
+/**
+ * TODO: Implement the renderTable function.
+ * This function takes an array of student objects.
+ * It should:
+ * 1. Clear the current content of the `studentTableBody`.
+ * 2. Loop through the provided array of students.
+ * 3. For each student, call `createStudentRow` and append the returned <tr> to `studentTableBody`.
+ */
+function renderTable(studentArray) {
+  studentTableBody.innerHTML = "";
+  studentArray.forEach(student => {
+    studentTableBody.appendChild(createStudentRow(student));
+  });
+}
 
-                        <!-- TODO: Add a 'label' and 'input' for the student's ID.
-                             - label 'for': "student-id"
-                             - input 'id': "student-id"
-                             - input 'type': "text"
-                             - input: required -->
+/**
+ * TODO: Implement the handleChangePassword function.
+ * This function will be called when the "Update Password" button is clicked.
+ * It should:
+ * 1. Prevent the form's default submission behavior.
+ * 2. Get the values from "current-password", "new-password", and "confirm-password" inputs.
+ * 3. Perform validation:
+ * - If "new-password" and "confirm-password" do not match, show an alert: "Passwords do not match."
+ * - If "new-password" is less than 8 characters, show an alert: "Password must be at least 8 characters."
+ * 4. If validation passes, show an alert: "Password updated successfully!"
+ * 5. Clear all three password input fields.
+ */
+function handleChangePassword(event) {
+  event.preventDefault();
 
-                        <!-- TODO: Add a 'label' and 'input' for the student's email.
-                             - label 'for': "student-email"
-                             - input 'id': "student-email"
-                             - input 'type': "email"
-                             - input: required -->
-                        
-                        <!-- TODO: Add a 'label' and 'input' for the default password.
-                             - label 'for': "default-password"
-                             - input 'id': "default-password"
-                             - input 'type': "text"
-                             - You can pre-fill this with a value like "password123" or leave it blank. -->
+  const current = document.querySelector("#current-password").value;
+  const newPass = document.querySelector("#new-password").value;
+  const confirm = document.querySelector("#confirm-password").value;
 
-                        <!-- TODO: Add a 'button' to submit the form.
-                             - type="submit"
-                             - id="add"
-                             - Text: "Add Student" -->
+  if (newPass !== confirm) {
+    alert("Passwords do not match.");
+    return;
+  }
 
-                    <!-- End of the fieldset. -->
-                <!-- End of the add student form. -->
-            <!-- End of the 'details' element. -->
+  if (newPass.length < 8) {
+    alert("Password must be at least 8 characters.");
+    return;
+  }
 
+  alert("Password updated successfully!");
+  document.querySelector("#current-password").value = "";
+  document.querySelector("#new-password").value = "";
+  document.querySelector("#confirm-password").value = "";
+}
 
-            <!-- Subsection 2.2: Student List -->
-            <!-- TODO: Add a sub-heading (e.g., 'h3') for the list of students, "Registered Students". -->
+/**
+ * TODO: Implement the handleAddStudent function.
+ * This function will be called when the "Add Student" button is clicked.
+ * It should:
+ * 1. Prevent the form's default submission behavior.
+ * 2. Get the values from "student-name", "student-id", and "student-email".
+ * 3. Perform validation:
+ * - If any of the three fields are empty, show an alert: "Please fill out all required fields."
+ * - (Optional) Check if a student with the same ID already exists in the 'students' array.
+ * 4. If validation passes:
+ * - Create a new student object: { name, id, email }.
+ * - Add the new student object to the global 'students' array.
+ * - Call `renderTable(students)` to update the view.
+ * 5. Clear the "student-name", "student-id", "student-email", and "default-password" input fields.
+ */
+function handleAddStudent(event) {
+  event.preventDefault();
 
-            <!-- TODO: Create a 'table' to display the list of students. Give it an id="student-table". -->
-                <!-- TODO: Create a 'thead' for the table headers. -->
-                    <!-- TODO: Create a 'tr' (table row) inside the 'thead'. -->
-                        <!-- TODO: Create 'th' (table header) cells for "Name", "Student ID", "Email", and "Actions". -->
-                    <!-- End of the row. -->
-                <!-- End of 'thead'. -->
+  const name = document.querySelector("#student-name").value.trim();
+  const id = document.querySelector("#student-id").value.trim();
+  const email = document.querySelector("#student-email").value.trim();
 
-                <!-- TODO: Create a 'tbody' for the table body, where student data will go. -->
-                    <!-- TODO: For now, add 2-3 rows of dummy data so you can see how the table is structured. -->
-                    <!-- Example Student Row: -->
-                    <!-- TODO: Create a 'tr' for a student record. -->
-                        <!-- TODO: Create 'td' (table data) cells for a student's name (e.g., "John Doe"), ID (e.g., "12345"), and email (e.g., "john.doe@example.com"). -->
-                        
-                        <!-- TODO: Create a final 'td' for action buttons. -->
-                            <!-- TODO: Add an "Edit" button. -->
-                            <!-- TODO: Add a "Delete" button. -->
-                        <!-- End of the actions 'td'. -->
-                    <!-- End of the student row. -->
+  if (!name || !id || !email) {
+    alert("Please fill out all required fields.");
+    return;
+  }
 
-                    <!-- TODO: Add another 'tr' for a second student as another example. -->
-                <!-- End of 'tbody'. -->
-            <!-- End of the table. -->
+  if (students.some(s => s.id === id)) {
+    alert("Student ID already exists.");
+    return;
+  }
 
-        <!-- End of the student management section. -->
+  students.push({ name, id, email });
+  renderTable(students);
 
-    <!-- End of the main content area. -->
+  document.querySelector("#student-name").value = "";
+  document.querySelector("#student-id").value = "";
+  document.querySelector("#student-email").value = "";
+  document.querySelector("#default-password").value = "password123";
+}
 
-</body>
-</html>
+/**
+ * TODO: Implement the handleTableClick function.
+ * This function will be an event listener on the `studentTableBody` (event delegation).
+ * It should:
+ * 1. Check if the clicked element (`event.target`) has the class "delete-btn".
+ * 2. If it is a "delete-btn":
+ * - Get the `data-id` attribute from the button.
+ * - Update the global 'students' array by filtering out the student with the matching ID.
+ * - Call `renderTable(students)` to update the view.
+ * 3. (Optional) Check for "edit-btn" and implement edit logic.
+ */
+function handleTableClick(event) {
+  const target = event.target;
 
+  if (target.classList.contains("delete-btn")) {
+    const id = target.dataset.id;
+    students = students.filter(s => s.id !== id);
+    renderTable(students);
+  }
+
+  if (target.classList.contains("edit-btn")) {
+    const id = target.dataset.id;
+    const student = students.find(s => s.id === id);
+    if (student) {
+      const newName = prompt("Enter new name:", student.name);
+      const newEmail = prompt("Enter new email:", student.email);
+      if (newName) student.name = newName;
+      if (newEmail) student.email = newEmail;
+      renderTable(students);
+    }
+  }
+}
+
+/**
+ * TODO: Implement the handleSearch function.
+ * This function will be called on the "input" event of the `searchInput`.
+ * It should:
+ * 1. Get the search term from `searchInput.value` and convert it to lowercase.
+ * 2. If the search term is empty, call `renderTable(students)` to show all students.
+ * 3. If the search term is not empty:
+ * - Filter the global 'students' array to find students whose name (lowercase)
+ * includes the search term.
+ * - Call `renderTable` with the *filtered array*.
+ */
+function handleSearch(event) {
+  const term = searchInput.value.toLowerCase();
+  if (!term) {
+    renderTable(students);
+  } else {
+    renderTable(students.filter(s => s.name.toLowerCase().includes(term)));
+  }
+}
+
+/**
+ * TODO: Implement the handleSort function.
+ * This function will be called when any `th` in the `thead` is clicked.
+ * It should:
+ * 1. Identify which column was clicked (e.g., `event.currentTarget.cellIndex`).
+ * 2. Determine the property to sort by ('name', 'id', 'email') based on the index.
+ * 3. Determine the sort direction. Use a data-attribute (e.g., `data-sort-dir="asc"`) on the `th`
+ * to track the current direction. Toggle between "asc" and "desc".
+ * 4. Sort the global 'students' array *in place* using `array.sort()`.
+ * - For 'name' and 'email', use `localeCompare` for string comparison.
+ * - For 'id', compare the values as numbers.
+ * 5. Respect the sort direction (ascending or descending).
+ * 6. After sorting, call `renderTable(students)` to update the view.
+ */
+function handleSort(event) {
+  const index = event.currentTarget.cellIndex;
+  let prop;
+  switch (index) {
+    case 0: prop = "name"; break;
+    case 1: prop = "id"; break;
+    case 2: prop = "email"; break;
+    default: return;
+  }
+
+  const currentDir = event.currentTarget.dataset.sortDir || "asc";
+  const newDir = currentDir === "asc" ? "desc" : "asc";
+  event.currentTarget.dataset.sortDir = newDir;
+
+  students.sort((a, b) => {
+    if (prop === "id") return newDir === "asc" ? a.id - b.id : b.id - a.id;
+    return newDir === "asc" ? a[prop].localeCompare(b[prop]) : b[prop].localeCompare(a[prop]);
+  });
+
+  renderTable(students);
+}
+
+/**
+ * TODO: Implement the loadStudentsAndInitialize function.
+ * This function needs to be 'async'.
+ * It should:
+ * 1. Use the `fetch()` API to get data from 'students.json'.
+ * 2. Check if the response is 'ok'. If not, log an error.
+ * 3. Parse the JSON response (e.g., `await response.json()`).
+ * 4. Assign the resulting array to the global 'students' variable.
+ * 5. Call `renderTable(students)` to populate the table for the first time.
+ * 6. After data is loaded, set up all the event listeners:
+ * - "submit" on `changePasswordForm` -> `handleChangePassword`
+ * - "submit" on `addStudentForm` -> `handleAddStudent`
+ * - "click" on `studentTableBody` -> `handleTableClick`
+ * - "input" on `searchInput` -> `handleSearch`
+ * - "click" on each header in `tableHeaders` -> `handleSort`
+ */
+async function loadStudentsAndInitialize() {
+  try {
+    const response = await fetch("students.json");
+    if (!response.ok) throw new Error("Failed to fetch students.json");
+
+    students = await response.json();
+    renderTable(students);
+
+    changePasswordForm.addEventListener("submit", handleChangePassword);
+    addStudentForm.addEventListener("submit", handleAddStudent);
+    studentTableBody.addEventListener("click", handleTableClick);
+    searchInput.addEventListener("input", handleSearch);
+    tableHeaders.forEach(th => th.addEventListener("click", handleSort));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// --- Initial Page Load ---
+// Call the main async function to start the application. 
+loadStudentsAndInitialize();
