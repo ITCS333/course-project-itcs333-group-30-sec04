@@ -65,9 +65,14 @@ require_once '../config/Database.php';
 // TODO: Get the PDO database connection
 // Example: $database = new Database();
 //          $db = $database->getConnection();
+if (!class_exists('Database')) {
+    die(json_encode([
+        "success" => false,
+        "message" => "Database class NOT found. Check file path and class name."
+    ]));
+}
 $database = new Database();
 $db = $database->getConnection();
-
 
 // TODO: Get the HTTP request method
 // Use $_SERVER['REQUEST_METHOD']
@@ -82,11 +87,9 @@ $data = json_decode($rawInput, true);
 // TODO: Parse query parameters
 // Get the 'resource' parameter to determine if request is for weeks or comments
 // Example: ?resource=weeks or ?resource=comments
-if (isset($_GET['resource'])) {
-    $resource = $_GET['resource'];
-} else {
-    $resource = 'weeks';
-}
+$resource = $_GET['resource'] ?? 'weeks';
+$weekId = $_GET['week_id'] ?? null;
+$commentId = $_GET['id'] ?? null;
 
 
 // ============================================================================
@@ -105,10 +108,10 @@ if (isset($_GET['resource'])) {
  */
 function getAllWeeks($db) {
     // TODO: Initialize variables for search, sort, and order from query parameters
-    $search = $_GET['search'] ?? '';
-    $sort   = $_GET['sort'] ?? 'start_date';
-    $order  = $_GET['order'] ?? 'asc';
-    
+    $search = isset($_GET['search']) ? $_GET['search'] : '';
+    $sort   = isset($_GET['sort']) ? $_GET['sort'] : 'start_date';
+    $order  = isset($_GET['order']) ? $_GET['order'] : 'asc';
+
     // TODO: Start building the SQL query
     // Base query: SELECT week_id, title, start_date, description, links, created_at FROM weeks
     $sql = "SELECT week_id, title, start_date, description, links, created_at FROM weeks";
@@ -116,39 +119,44 @@ function getAllWeeks($db) {
     // TODO: Check if search parameter exists
     // If yes, add WHERE clause using LIKE for title and description
     // Example: WHERE title LIKE ? OR description LIKE ?
-    if (!empty($search)) {
-    $sql .= " WHERE title LIKE ? OR description LIKE ?";}
-    // TODO: Check if sort parameter exists
-    // Validate sort field to prevent SQL injection (only allow: title, start_date, created_at)
-    // If invalid, use default sort field (start_date)
-    $allowedSortFields = ['title', 'start_date', 'created_at'];
-    if (!isValidSortField($sort, $allowedSortFields)) {
-        $sort = 'start_date'; }
-    // TODO: Check if order parameter exists
-    // Validate order to prevent SQL injection (only allow: asc, desc)
-    // If invalid, use default order (asc)
-    $order = strtolower($order);
-    if (!in_array($order, ['asc', 'desc'])) {
-        $order = 'asc'; // default
-    }
-    // TODO: Add ORDER BY clause to the query
-    $sql .= " ORDER BY $sort $order";
-
-    // TODO: Prepare the SQL query using PDO
-    //$sql = "SELECT week_id, title, start_date, description, links, created_at FROM weeks";
-    $stmt = $db->prepare($sql);
-    $sql = "SELECT week_id, title, start_date, description, links, created_at FROM weeks";
-    // TODO: Bind parameters if using search
-    // Use wildcards for LIKE: "%{$searchTerm}%"
-    $params = [];
-    if (!empty($search)) {
+   $params = [];
+    if (isset($_GET['search']) && trim($search) !== '') {
         $sql .= " WHERE title LIKE ? OR description LIKE ?";
         $searchTerm = "%$search%";
         $params[] = $searchTerm;
         $params[] = $searchTerm;
-    }    
+    }
+    // TODO: Check if sort parameter exists
+    // Validate sort field to prevent SQL injection (only allow: title, start_date, created_at)
+    // If invalid, use default sort field (start_date)
+    $allowedSortFields = ['title', 'start_date', 'created_at'];
+    if (!in_array($sort, $allowedSortFields)) {
+        $sort = 'start_date';
+    }
+    // TODO: Check if order parameter exists
+    // Validate order to prevent SQL injection (only allow: asc, desc)
+    // If invalid, use default order (asc)
+
+    $order = strtolower($order);
+    if (!in_array($order, ['asc', 'desc'])) {
+        $order = 'asc';
+    }
+    $order = strtoupper($order);
+    // TODO: Add ORDER BY clause to the query
+    $sql .= " ORDER BY $sort $order";
+    // TODO: Prepare the SQL query using PDO
+    //$sql = "SELECT week_id, title, start_date, description, links, created_at FROM weeks";
+    $stmt = $db->prepare($sql);
+    // TODO: Bind parameters if using search
+    // Use wildcards for LIKE: "%{$searchTerm}%"
+    if (isset($_GET['search']) && trim($search) !== '') {
+        $searchTerm = "%$search%";
+        $stmt->bindParam(1, $searchTerm, PDO::PARAM_STR);
+        $stmt->bindParam(2, $searchTerm, PDO::PARAM_STR);
+    }
+      
     // TODO: Execute the query
-    $stmt->execute();
+    $stmt->execute(); 
     // TODO: Fetch all results as an associative array
     $weeks = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // TODO: Process each week's links field
@@ -157,9 +165,7 @@ function getAllWeeks($db) {
         $week['links'] = json_decode($week['links'], true) ?? [];
     }
     // TODO: Return JSON response with success status and data
-    // Use sendResponse() helper function
-
-    
+    // Use sendResponse() helper functiom
     sendResponse(['success' => true, 'data' => $weeks]);
 }
 
@@ -175,12 +181,8 @@ function getAllWeeks($db) {
 function getWeekById($db, $weekId) {
     // TODO: Validate that week_id is provided
     // If not, return error response with 400 status
-    if (empty($weekId)) {
-        sendResponse([
-            'success' => false,
-            'message' => 'week_id is required'
-        ], 400);
-        return;
+    if (!isset($weekId)) {
+        sendError('week_id is required', 400);
     }
     // TODO: Prepare SQL query to select week by week_id
     // SELECT week_id, title, start_date, description, links, created_at FROM weeks WHERE week_id = ?
@@ -280,7 +282,7 @@ function createWeek($db, $data) {
     // TODO: Handle links array
     // If links is provided and is an array, encode it to JSON using json_encode()
     // If links is not provided, use an empty array []
-    if (!empty($data['links']) && is_array($data['links'])) {
+    if (isset($data['links']) && is_array($data['links'])) {
         $linksJson = json_encode($data['links']);
     } else {
         $linksJson = json_encode([]); // empty array
@@ -339,14 +341,16 @@ function createWeek($db, $data) {
 function updateWeek($db, $data) {
     // TODO: Validate that week_id is provided
     // If not, return error response with 400 status
-    if (empty($data['week_id'])) {
+    if (!isset($data['week_id'])) {
         sendResponse([
             'success' => false,
             'message' => 'week_id is required'
         ], 400);
         return;
     }
-    $weekId = sanitizeInput(trim($data['week_id']));
+
+    $weekId = $data['week_id'];
+
     // TODO: Check if week exists
     // Prepare and execute a SELECT query to find the week
     // If not found, return error response with 404 status
@@ -535,7 +539,7 @@ function deleteWeek($db, $weekId) {
 function getCommentsByWeek($db, $weekId) {
     // TODO: Validate that week_id is provided
     // If not, return error response with 400 status
-    if (empty($weekId)) {
+   if (!isset($weekId) || empty($weekId)) {
         sendResponse([
             'success' => false,
             'message' => 'week_id is required'
@@ -558,10 +562,13 @@ function getCommentsByWeek($db, $weekId) {
     $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // TODO: Return JSON response with success status and data
     // Even if no comments exist, return an empty array
-      sendResponse([
-        'success' => true,
-        'data' => $comments
-    ], 200);
+      if (!$comments) {
+        sendResponse([
+            'success' => false,
+            'message' => 'Week not found'
+        ], 404);
+        return;
+    }
 }
 
 
@@ -579,16 +586,17 @@ function createComment($db, $data) {
     // TODO: Validate required fields
     // Check if week_id, author, and text are provided
     // If any field is missing, return error response with 400 status
-     if (
-        empty($data['week_id']) ||
-        empty($data['author']) ||
-        empty($data['text'])
-    ) {
-        sendResponse([
-            'success' => false,
-            'message' => 'week_id, author, and text are required'
-        ], 400);
-        return;
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (
+        !isset($_POST['week_id']) ||
+        !isset($_POST['author']) ||
+        !isset($_POST['text']) ){
+            sendResponse([
+                'success' => false,
+                'message' => 'week_id, author, and text are required'
+            ], 400);
+            return;
+        }
     }
     // TODO: Sanitize input data
     // Trim whitespace from all fields
@@ -607,11 +615,11 @@ function createComment($db, $data) {
     // TODO: Check if the week exists
     // Prepare and execute a SELECT query on weeks table
     // If week not found, return error response with 404 status
-      $checkStmt = $db->prepare("SELECT week_id FROM weeks WHERE week_id = ?");
-    $checkStmt->bindParam(1, $weekId);
-    $checkStmt->execute();
+    $checkStmt = $db->prepare("SELECT week_id FROM weeks WHERE week_id = ?");
+    $checkStmt->execute([$weekId]);
+    $week = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($checkStmt->rowCount() === 0) {
+    if (!$week) {
         sendResponse([
             'success' => false,
             'message' => 'Week not found'
@@ -678,10 +686,10 @@ function deleteComment($db, $commentId) {
     // Prepare and execute a SELECT query
     // If not found, return error response with 404 status
     $checkStmt = $db->prepare("SELECT id FROM comments WHERE id = ?");
-    $checkStmt->bindParam(1, $commentId);
-    $checkStmt->execute();
+    $checkStmt->execute([$commentId]);
+    $comment = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($checkStmt->rowCount() === 0) {
+    if (!$comment) {
         sendResponse([
             'success' => false,
             'message' => 'Comment not found'
