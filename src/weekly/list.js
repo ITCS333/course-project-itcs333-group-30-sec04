@@ -36,7 +36,7 @@
     article.appendChild(title);
 
     const startDate= document.createElement("p");
-    startDate.textContent= `Starts on: ${week.startDate}`;
+    startDate.textContent= `Starts on: ${week.start_date || week.startDate}`;
     article.appendChild(startDate);
 
     const description= document.createElement("p");
@@ -71,8 +71,9 @@
     // ... your implementation here ...
     
     try{
-      const response= await fetch("api/weeks.json");
-      const weeks = await response.json();
+      const response= await fetch("api/index.php?resource=weeks");
+      const result = await response.json();
+      const weeks = result.data || [];
   
       listSection.innerHTML="";
       console.log("Cleared existing content in listSection.");
