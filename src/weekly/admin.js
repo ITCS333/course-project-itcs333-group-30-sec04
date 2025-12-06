@@ -14,7 +14,6 @@
 // --- Global Data Store ---
 // This will hold the weekly data loaded from the JSON file.
  let weeks = [];
-
 // --- Element Selections ---
 // TODO: Select the week form ('#week-form').
  const weekForm= document.getElementById("week-form");
@@ -22,6 +21,11 @@
 // TODO: Select the weeks table body ('#weeks-tbody').
  const weekTbody= document.getElementById("weeks-tbody");
 
+// CHANGED: Added this constant for API endpoint - UPDATE THIS TO YOUR ACTUAL PATH!
+
+// Example paths:
+// const API_BASE_URL = 'http://localhost/course-management/api/weeks.php';
+// const API_BASE_URL = '../api/weeks.php';
 
 // --- Functions ---
 
@@ -44,6 +48,12 @@
    const titletd= document.createElement("td");
    titletd.textContent= week.title;
    newtr.appendChild(titletd);
+
+    // NEW: Added start date column (matching your database structure)
+    const startDatetd = document.createElement("td");
+    startDatetd.textContent = week.start_date; // CHANGED: Using 'start_date' from database
+    newtr.appendChild(startDatetd);
+
 
    const descrtd=document.createElement("td");
    descrtd.textContent=week.description;
