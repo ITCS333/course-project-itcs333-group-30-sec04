@@ -7,69 +7,66 @@
 -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
-    <meta charset="UTF-8" />
-    <!-- TODO: Add the responsive 'viewport' meta tag. -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
- <title> eWeb Dev Course Homepage </title>
-    <!-- TODO: Link to your CSS framework or stylesheet. -->
-     <link rel="stylesheet" href="style.css">
-</head>
-<body>
+      <title>Web Development Course Homepage</title>
 
-    <!-- TODO: Create a 'header' with a main heading ('h1') like "Welcome to the Web Development Course". -->
-<header>
-    <h1>Welcome to the Web Development Course</h1>
-</header>
-    <!-- TODO: Create the 'main' content area. -->
-<main>
-        <!-- TODO: Create a 'nav' element to hold the site navigation. -->
-         <nav>
-        
-            <!-- TODO: Add a sub-heading ('h2') "Site Navigation". -->
-<h2>site Navigation</h2>
-            <!-- TODO: Create an unordered list ('ul') to hold the links. -->
-<ul>
-                <!-- Section: General -->
-               
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Login page.
-               
-             - Text: "Login" -->
-              <li><a href="src/auth/login.html">Login</a></li>
-                <!-- Section: Admin Pages -->
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Admin Portal.
-                     - Text: "Admin Portal (Manage Students)" -->
-                 <li><a href="src/admin/admin.html">admin portal</a></li>
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Admin Resources page.
-                     - Text: "Admin: Manage Resources" -->
- <li><a href="src/resources/admin-resources">Admin: Manage Resources</a></li>
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Admin Weekly Breakdown page.
-                     - Text: "Admin: Manage Weekly Breakdown" -->
-<li><a href="admin-weekly.html">Admin: Manage Weekly Breakdown</a></li>
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Admin Assignments page.
-                     - Text: "Admin: Manage Assignments" -->
-<li><a href="admin-assignments.html">Admin: Manage Assignments</a></li>
-                <!-- Section: Student Pages -->
-                 <!-- <li><a href="student">student portal</a></li> -->
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Student Resources page.
-                     - Text: "View Course Resources" -->
-<li><a href="student-resources.html">View Course Resources</a></li>
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Student Weekly Breakdown page.
-                     - Text: "View Weekly Breakdown" -->
- <li><a href="student-weekly.html">View Weekly Breakdown</a></li>
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Student Assignments page.
-                     - Text: "View Assignments" -->
-              <li><a href="student-assignments.html">View Assignments</a></li>
-                <!-- TODO: Add a list item ('li') with a link ('a') to the Discussion Board.
-                     - Text: "General Discussion Board" -->
- <li><a href="DiscussionBoard"> Discussion Board</a></li>
-            <!-- End of the unordered list. -->
-        <!-- End of the 'nav' element. -->
-</ul>
-</nav>
-    <!-- End of 'main'. -->
-</main>
-</body>
+      <link 
+        rel="stylesheet" 
+        href="https://cdn.jsdelivr.net/npm/@picocss/pico@latest/css/pico.classless.min.css"
+      >
+
+      <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+
+      <header class="container">
+        <h1>Welcome to the Web Development Course</h1>
+        <p>ITCS333 – Internet Software Development</p>
+      </header>
+
+      <main class="container grid">
+
+        <section>
+          <h2>Site Navigation</h2>
+
+          <ul class="nav-list">
+            <li><a href="src/auth/login.html">Login</a></li>
+            <li><a href="src/admin/manage_users.html">Admin Portal (Manage Students)</a></li>
+            <li><a href="src/resources/admin.html">Admin: Manage Resources</a></li>
+            <li><a href="src/weekly/admin.html">Admin: Manage Weekly Breakdown</a></li>
+            <li><a href="src/assignments/admin.html">Admin: Manage Assignments</a></li>
+            <li><a href="src/resources/list.html">View Course Resources</a></li>
+            <li><a href="src/weekly/list.html">View Weekly Breakdown</a></li>
+            <li><a href="src/assignments/list.html">View Assignments</a></li>
+            <li><a href="src/discussion/board.html">General Discussion Board</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Course Overview</h2>
+          <p>
+            This platform provides access to all course materials, weekly breakdowns,
+            assignments, and discussion forums for ITCS333 – Internet Software Development.
+          </p>
+
+          <p>
+            Students can explore resources, track weekly content, submit assignments,
+            and participate in discussions. The instructor can manage all content through
+            the admin portal.
+          </p>
+        </section>
+
+      </main>
+
+      <footer class="container">
+        <small>
+          © 2025 ITCS333 – Internet Software Development | Course Project
+        </small>
+      </footer>
+
+    </body>
+
 </html>
