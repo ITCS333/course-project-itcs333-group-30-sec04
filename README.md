@@ -17,6 +17,6 @@
 ##Fatima Ebrahim A.jabbar 202307826 : Assignments
 
 ## A link to your live, hosted application on Replit.
-## https://replit.com/@TaslimHanouf/ITCS333-Course-Project-1?v=1
+## https://replit.com/@fatimaebr07/ITCS333-Course-Project-1?v=1
 ## https://replit.com/@fatimaebr07/ITCS333-Course-Project-G30?v=1
 
