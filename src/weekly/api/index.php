@@ -37,23 +37,18 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 
 // ============================================================================
-// TEMPORARY AUTH FOR TESTING - ADD THIS AT THE TOP
+// REAL AUTH - USING SESSION SET DURING LOGIN
 // ============================================================================
 session_start();
 
-// For testing comments - always set a test user
-if (!isset($_SESSION['user'])) {
-    $_SESSION['user'] = [
-        'id' => 1,
-        'name' => 'Test Student',
-        'email' => 'test@student.com',
-        'role' => 'student'
-    ];
-}
-
-// Helper function to get current user name
+// Helper function to get current user name from real session
 function getCurrentUserName() {
-    return $_SESSION['user']['name'] ?? 'Anonymous';
+    // Check for the session variable your auth system sets (e.g., 'user_name')
+    if (isset($_SESSION['user_name']) && !empty($_SESSION['user_name'])) {
+        return $_SESSION['user_name'];
+    }
+    // Fallback if no user is logged in
+    return 'Anonymous';
 }
 
 
@@ -326,7 +321,13 @@ function createComment($db, $data) {
     // Trim whitespace from all fields
     $weekId = sanitizeInput(trim($data['week_id']));
     $text = sanitizeInput(trim($data['text']));
-    $author = getCurrentUserName();
+    
+    if (isset($data['author']) && !empty($data['author'])) {
+        $author = sanitizeInput(trim($data['author']));
+    } else {
+        // Fallback to session or anonymous
+        $author = getCurrentUserName();
+    }
 
     if (empty($text)) {
         sendResponse(['success' => false, 'message' => 'Comment text cannot be empty'], 400);

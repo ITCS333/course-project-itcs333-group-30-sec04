@@ -61,10 +61,10 @@ async function handleAddComment(event) {
       alert("Please enter a comment");
       return;
     }
+    const user_name = localStorage.getItem('user_name') || 'Anonymous';
 
     const commentData = {
       week_id: currentWeekId,
-      author: 'Student',
       text: commentText
     };
 
@@ -108,6 +108,18 @@ async function loadComments() {
   }
 
   async function initializePage() {
+    console.log('=== DEBUG: Checking localStorage ===');
+    console.log('user_name:', localStorage.getItem('user_name'));
+    console.log('user_id:', localStorage.getItem('user_id'));
+    console.log('user_email:', localStorage.getItem('user_email'));
+    console.log('is_admin:', localStorage.getItem('is_admin'));
+    console.log('logged_in:', localStorage.getItem('logged_in'));
+    console.log('==============================');
+
+
+
+
+    
     currentWeekId = getWeekIdFromURL();
 
     if (!currentWeekId) {

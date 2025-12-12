@@ -211,56 +211,12 @@ async function loadAndInitialize() {
   await loadWeeks();
   weekForm.addEventListener('submit', handleFormSubmit);
   weekTbody.addEventListener('click', handleTableClick);
+  
 }
+loadAndInitialize()
 
 
 
 
 
-// ADMIN CHECK 
-async function checkAdminAccess() {
-    try {
-        // Call check-admin API
-        const response = await fetch('../admin/api/check-admin.php');
 
-        const result = await response.json();
-
-        if (result.success) {
-            console.log("Admin access granted:", result.message);
-            return true;
-        } else {
-            // if not admin show error and redirect to login page
-            alert("ACCESS DENIED\n\n" + 
-                  "Only administrators can access this page.\n" +
-                  "Error: " + (result.error || result.message));
-
-            //  Redirect to login page instead of index
-            window.location.href = "../auth/login.html";  // Changed to login page
-            return false;
-        }
-
-    } catch (error) {
-        console.log("Auth check error (but continuing for testing):", error);
-        // If API fails  still load the page for testing
-        // can comment this out once auth works
-        const proceed = confirm(" WARNING: Admin check failed!\n\n" +
-                               "This is normal if auth system isn't ready.\n\n" +
-                               "Click OK to continue testing admin features.\n" +
-                               "Click Cancel to go back to login page.");
-
-        if (proceed) {
-            return true; // Allow access for testing
-        } else {
-            //  Redirect to login page
-            window.location.href = "../auth/login.html";  //  Changed to login page
-            return false;
-        }
-    }
-}
-
-// Start the admin page
-checkAdminAccess().then(isAdmin => {
-    if (isAdmin) {
-        loadAndInitialize(); //  existing function
-    }
-});
