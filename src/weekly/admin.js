@@ -9,6 +9,7 @@ let editingWeekId = null;
 const weekForm = document.getElementById("week-form");
 const weekTbody = document.getElementById("weeks-tbody");
 const API_BASE_URL = 'api/index.php';
+
 function createWeekRow(week) {
   const newtr = document.createElement("tr");
   newtr.dataset.weekId = week.id;
@@ -78,10 +79,13 @@ async function handleTableClick(event) {
       console.error('Error deleting week:', error);
       alert("Failed to delete week. Please try again.");
     }
-  } else if (event.target.classList.contains("edit-btn")) {
-    const week = weeks.find(w => w.id === weekId);
+  }  else if (event.target.classList.contains("edit-btn")) {
+
+    const week = weeks.find(w => String(w.id) === String(weekId));
     if (week) {
       populateFormForEdit(week);
+    } else {
+      console.warn('Edit clicked but week not found for id:', weekId);
     }
   }
 }
@@ -92,6 +96,8 @@ function populateFormForEdit(week) {
   document.getElementById("week-start-date").value = week.start_date;
   document.getElementById("week-description").value = week.description;
   document.getElementById("week-links").value = (week.links || []).join("\n");
+
+
 
   const submitBtn = weekForm.querySelector('button[type="submit"]');
   if (submitBtn) {
@@ -207,4 +213,54 @@ async function loadAndInitialize() {
   weekTbody.addEventListener('click', handleTableClick);
 }
 
-loadAndInitialize(); 
+
+
+
+
+// ADMIN CHECK 
+async function checkAdminAccess() {
+    try {
+        // Call check-admin API
+        const response = await fetch('../admin/api/check-admin.php');
+
+        const result = await response.json();
+
+        if (result.success) {
+            console.log("Admin access granted:", result.message);
+            return true;
+        } else {
+            // if not admin show error and redirect to login page
+            alert("ACCESS DENIED\n\n" + 
+                  "Only administrators can access this page.\n" +
+                  "Error: " + (result.error || result.message));
+
+            //  Redirect to login page instead of index
+            window.location.href = "../auth/login.html";  // Changed to login page
+            return false;
+        }
+
+    } catch (error) {
+        console.log("Auth check error (but continuing for testing):", error);
+        // If API fails  still load the page for testing
+        // can comment this out once auth works
+        const proceed = confirm(" WARNING: Admin check failed!\n\n" +
+                               "This is normal if auth system isn't ready.\n\n" +
+                               "Click OK to continue testing admin features.\n" +
+                               "Click Cancel to go back to login page.");
+
+        if (proceed) {
+            return true; // Allow access for testing
+        } else {
+            //  Redirect to login page
+            window.location.href = "../auth/login.html";  //  Changed to login page
+            return false;
+        }
+    }
+}
+
+// Start the admin page
+checkAdminAccess().then(isAdmin => {
+    if (isAdmin) {
+        loadAndInitialize(); //  existing function
+    }
+});
