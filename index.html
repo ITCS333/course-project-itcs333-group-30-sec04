@@ -21,10 +21,82 @@
       <link rel="stylesheet" href="style.css">
     </head>
     <body>
+      <script>
+        function updateUIForRole() {
+          const isAdmin = localStorage.getItem('is_admin') === '1';
+          const userName = localStorage.getItem('user_name') || 'User';
+          
+          // Hide admin links if not admin
+          const adminLinks = document.querySelectorAll('.admin-link');
+          adminLinks.forEach(link => {
+            link.style.display = isAdmin ? 'block' : 'none';
+          });
+
+          // Update welcome message
+          const welcomeHeader = document.querySelector('header h1');
+          if (welcomeHeader) {
+            welcomeHeader.textContent = `Welcome ${userName} to the Web Development Course`;
+          }
+
+          // Show logout button
+          const logoutBtn = document.getElementById('logout-btn');
+          if (logoutBtn) {
+            logoutBtn.style.display = 'block';
+          }
+        }
+
+        function logout() {
+          localStorage.clear();
+          fetch('src/auth/api/logout.php')
+            .then(() => {
+              window.location.href = 'src/auth/login.html';
+            })
+            .catch(() => {
+              window.location.href = 'src/auth/login.html';
+            });
+        }
+
+        // Wait for DOM to load before checking auth
+        document.addEventListener('DOMContentLoaded', function() {
+          // Check if user is logged in, if not redirect to login page
+          fetch('src/auth/api/check-auth.php')
+            .then(response => response.json())
+            .then(data => {
+              if (!data.logged_in) {
+                // Clear localStorage if not logged in
+                localStorage.clear();
+                window.location.href = 'src/auth/login.html';
+              } else {
+                // Update localStorage with session data
+                if (data.user) {
+                  localStorage.setItem('user_id', data.user.id);
+                  localStorage.setItem('user_name', data.user.name);
+                  localStorage.setItem('user_email', data.user.email);
+                  localStorage.setItem('is_admin', data.user.is_admin ? '1' : '0');
+                  localStorage.setItem('role', data.user.is_admin ? 'admin' : 'student');
+                  localStorage.setItem('logged_in', 'true');
+                }
+                // Show/hide admin links based on role
+                updateUIForRole();
+              }
+            })
+            .catch(() => {
+              // Check localStorage as fallback
+              const loggedIn = localStorage.getItem('logged_in');
+              if (!loggedIn || loggedIn !== 'true') {
+                localStorage.clear();
+                window.location.href = 'src/auth/login.html';
+              } else {
+                updateUIForRole();
+              }
+            });
+        });
+      </script>
 
       <header class="container">
         <h1>Welcome to the Web Development Course</h1>
         <p>ITCS333 – Internet Software Development</p>
+        <button id="logout-btn" onclick="logout()" style="display:none; margin-top: 1rem;">Logout</button>
       </header>
 
       <main class="container grid">
@@ -33,11 +105,10 @@
           <h2>Site Navigation</h2>
 
           <ul class="nav-list">
-            <li><a href="src/auth/login.html">Login</a></li>
-            <li><a href="src/admin/manage_users.html">Admin Portal (Manage Students)</a></li>
-            <li><a href="src/resources/admin.html">Admin: Manage Resources</a></li>
-            <li><a href="src/weekly/admin.html">Admin: Manage Weekly Breakdown</a></li>
-            <li><a href="src/assignments/admin.html">Admin: Manage Assignments</a></li>
+            <li class="admin-link"><a href="src/admin/manage_users.html">Admin Portal (Manage Students)</a></li>
+            <li class="admin-link"><a href="src/resources/admin.html">Admin: Manage Resources</a></li>
+            <li class="admin-link"><a href="src/weekly/admin.html">Admin: Manage Weekly Breakdown</a></li>
+            <li class="admin-link"><a href="src/assignments/admin.html">Admin: Manage Assignments</a></li>
             <li><a href="src/resources/list.html">View Course Resources</a></li>
             <li><a href="src/weekly/list.html">View Weekly Breakdown</a></li>
             <li><a href="src/assignments/list.html">View Assignments</a></li>
