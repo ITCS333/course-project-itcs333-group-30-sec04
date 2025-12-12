@@ -25,11 +25,23 @@
  * Response Format: JSON
  */
 
+// Start session for admin check
+session_start();
+
 // TODO: Set headers for JSON response and CORS
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// Check admin access (except for OPTIONS preflight)
+if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
+    if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Access denied. Admin privileges required.']);
+        exit;
+    }
+}
 
 // TODO: Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
