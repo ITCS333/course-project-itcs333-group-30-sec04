@@ -4,12 +4,12 @@
   Instructions:
   1. Link this file to your HTML using a <script> tag with the 'defer' attribute.
      Example: <script src="login.js" defer></script>
-
+  
   2. In your login.html, add a <div> element *after* the </fieldset> but
      *before* the </form> closing tag. Give it an id="message-container".
      This div will be used to display success or error messages.
      Example: <div id="message-container"></div>
-
+  
   3. Implement the JavaScript functionality as described in the TODO comments.
 */
 
@@ -134,7 +134,7 @@ function handleLogin(event) {
         emailInput.value = "";
 
         passwordInput.value = "";
-
+        
         // Redirect to home page after successful login
         setTimeout(() => {
           window.location.href = "../../index.html";
