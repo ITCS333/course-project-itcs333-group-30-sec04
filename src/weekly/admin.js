@@ -9,6 +9,7 @@ let editingWeekId = null;
 const weekForm = document.getElementById("week-form");
 const weekTbody = document.getElementById("weeks-tbody");
 const API_BASE_URL = 'api/index.php';
+
 function createWeekRow(week) {
   const newtr = document.createElement("tr");
   newtr.dataset.weekId = week.id;
@@ -78,10 +79,13 @@ async function handleTableClick(event) {
       console.error('Error deleting week:', error);
       alert("Failed to delete week. Please try again.");
     }
-  } else if (event.target.classList.contains("edit-btn")) {
-    const week = weeks.find(w => w.id === weekId);
+  }  else if (event.target.classList.contains("edit-btn")) {
+
+    const week = weeks.find(w => String(w.id) === String(weekId));
     if (week) {
       populateFormForEdit(week);
+    } else {
+      console.warn('Edit clicked but week not found for id:', weekId);
     }
   }
 }
@@ -92,6 +96,8 @@ function populateFormForEdit(week) {
   document.getElementById("week-start-date").value = week.start_date;
   document.getElementById("week-description").value = week.description;
   document.getElementById("week-links").value = (week.links || []).join("\n");
+
+
 
   const submitBtn = weekForm.querySelector('button[type="submit"]');
   if (submitBtn) {
@@ -205,6 +211,12 @@ async function loadAndInitialize() {
   await loadWeeks();
   weekForm.addEventListener('submit', handleFormSubmit);
   weekTbody.addEventListener('click', handleTableClick);
+  
 }
+loadAndInitialize()
 
-loadAndInitialize(); 
+
+
+
+
+

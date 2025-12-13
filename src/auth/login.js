@@ -106,7 +106,7 @@ function handleLogin(event) {
     displayMessage("Password must be at least 8 characters.", "error");
     return;
   }
-  fetch("../api/index.php", {
+  fetch("../auth/api/index.php", {
     method: "POST",
 
     headers: { "Content-Type": "application/json" },
@@ -123,9 +123,22 @@ function handleLogin(event) {
       if (data.success) {
         displayMessage("Login successful!", "success");
 
+        // Save user credentials and role to localStorage
+        localStorage.setItem('user_id', data.user.id);
+        localStorage.setItem('user_name', data.user.name);
+        localStorage.setItem('user_email', data.user.email);
+        localStorage.setItem('is_admin', data.user.is_admin ? '1' : '0');
+        localStorage.setItem('role', data.user.is_admin ? 'admin' : 'student');
+        localStorage.setItem('logged_in', 'true');
+
         emailInput.value = "";
 
         passwordInput.value = "";
+        
+        // Redirect to home page after successful login
+        setTimeout(() => {
+          window.location.href = "../../index.html";
+        }, 1000);
       } else {
         displayMessage(data.message, "error");
       }

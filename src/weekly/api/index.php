@@ -35,6 +35,25 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
+
+// ============================================================================
+// REAL AUTH - USING SESSION SET DURING LOGIN
+// ============================================================================
+session_start();
+
+// Helper function to get current user name from real session
+function getCurrentUserName() {
+    // Check for the session variable your auth system sets (e.g., 'user_name')
+    if (isset($_SESSION['user_name']) && !empty($_SESSION['user_name'])) {
+        return $_SESSION['user_name'];
+    }
+    // Fallback if no user is logged in
+    return 'Anonymous';
+}
+
+
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
@@ -291,14 +310,24 @@ function getCommentsByWeek($db, $weekId) {
 
 
 function createComment($db, $data) {
-    if (empty($data['week_id']) || empty($data['author']) || empty($data['text'])) {
-        sendResponse(['success' => false, 'message' => 'week_id, author, and text are required'], 400);
+    // TODO: Validate required fields
+    // Check if week_id, author, and text are provided
+    // If any field is missing, return error response with 400 status
+    if (empty($data['week_id']) || empty($data['text'])) {
+        sendResponse(['success' => false, 'message' => 'week_id and text are required'], 400);
         return;
     }
-
+    // TODO: Sanitize input data
+    // Trim whitespace from all fields
     $weekId = sanitizeInput(trim($data['week_id']));
-    $author = sanitizeInput(trim($data['author']));
     $text = sanitizeInput(trim($data['text']));
+    
+    if (isset($data['author']) && !empty($data['author'])) {
+        $author = sanitizeInput(trim($data['author']));
+    } else {
+        // Fallback to session or anonymous
+        $author = getCurrentUserName();
+    }
 
     if (empty($text)) {
         sendResponse(['success' => false, 'message' => 'Comment text cannot be empty'], 400);
