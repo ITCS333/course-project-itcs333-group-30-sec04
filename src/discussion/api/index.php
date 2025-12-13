@@ -72,7 +72,7 @@ try {
     $db = $database->getConnection();
 }catch (PDOException $e){
     sendResponse(['success' => false, 'message' => 'Database connection failed'], 500);
-exit;
+
 }
 
 
@@ -169,10 +169,11 @@ function getAllTopics($db) {
 
     // TODO: Return JSON response with success status and data
     // Call sendResponse() helper function or echo json_encode directly
-    echo json_encode([
-        'success' => true,
-        'data' => $results
-    ]);
+    http_response_code(200);
+    echo json_encode($results);
+    exit;
+
+    
 }
 
 
@@ -196,8 +197,7 @@ function getTopicById($db, $topicId) {
     }
     // TODO: Prepare SQL query to select topic by topic_id
     // Select topic_id, subject, message, author, and created_at
-    $sql = "SELECT 
-                id, 
+    $sql = "SELECT  id, 
                 subject, 
                 message, 
                 author, 
@@ -224,11 +224,13 @@ function getTopicById($db, $topicId) {
             'data' => $topic
         ]);
     } else {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Topic not found'
-        ]);
         http_response_code(404);
+       echo json_encode([
+    'success' => false,
+    'message' => 'Topic not found'
+]);
+
+
     }
 }
 
@@ -469,12 +471,13 @@ function deleteTopic($db, $topicId) {
      $existingTopic = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
      if (!$existingTopic) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Topic not found'
-        ]);
-        http_response_code(404); 
-        exit();
+        http_response_code(404);
+      echo json_encode([
+      "error" => "Topic not found"
+      ]);
+      exit();
+
+
     }
 
 
@@ -502,11 +505,13 @@ function deleteTopic($db, $topicId) {
     // If yes, return success response
     // If no, return error with 500 status
     if ($stmtDelete->rowCount() > 0) {
-    echo json_encode([
-        'success' => true,
-        'message' => 'Topic deleted successfully'
-    ]);
-    http_response_code(200); 
+        http_response_code(200);
+       echo json_encode([
+                "message" => "Topic deleted successfully"
+         ]);
+         exit();
+
+  
     } else {
     echo json_encode([
         'success' => false,
