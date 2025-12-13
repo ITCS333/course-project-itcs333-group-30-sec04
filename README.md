@@ -3,9 +3,16 @@
 # ITCS333 Course Page
 
 ## The names and student IDs of all team members.
+## Fatima Ebrahim A.Jabbar 202307826
 ## Taslim Hanouf 202307892
 ## Zahraa Majeed Abdulhameed 202309381
 ## Maryam Qassim Mohamed Rafeei 202306492
+## Maha maeen 202306806
+
 ## A table indicating which student was responsible for which task.
-## Zahraa Majeed Abdulhameed 202309381: Discussion
+## Maryam Qassim Mohamed 202306492 - Task 1: Homepage, Admin Portal & User Management
+## Fatima Ebrahim A.jabbar 202307826 : Assignments
+## Zahraa Majeed Abdulhameed 202309381 :  Task 5 (Discussion)
+
+
 ## A link to your live, hosted application on Replit.
