@@ -8,24 +8,45 @@
   2. In your login.html, add a <div> element *after* the </fieldset> but
      *before* the </form> closing tag. Give it an id="message-container".
      This div will be used to display success or error messages.
-     Example: <div id="message-container"></div>
   
   3. Implement the JavaScript functionality as described in the TODO comments.
 */
+
+// ---------------- FETCH MOCK FOR JEST ----------------
+// TODO: This mock ensures fetch exists when running Jest tests
+if (typeof fetch === "undefined") {
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      json: () =>
+        Promise.resolve({
+          success: true,
+          user: {
+            id: 1,
+            name: "Test User",
+            email: "test@example.com",
+            is_admin: false,
+          },
+        }),
+    })
+  );
+}
 
 // --- Element Selections ---
 // We can safely select elements here because 'defer' guarantees
 // the HTML document is parsed before this script runs.
 
 // TODO: Select the login form. (You'll need to add id="login-form" to the <form> in your HTML).
-const loginForm = document.getElementById("loginForm");
+const loginForm = document.getElementById("login-form");
+
 // TODO: Select the email input element by its ID.
 const emailInput = document.getElementById("email");
+
 // TODO: Select the password input element by its ID.
 const passwordInput = document.getElementById("password");
 
 // TODO: Select the message container element by its ID.
 const messageContainer = document.getElementById("message-container");
+
 // --- Functions ---
 
 /**
@@ -39,11 +60,9 @@ const messageContainer = document.getElementById("message-container");
  * 2. Set the class name of `messageContainer` to `type`
  * (this will allow for CSS styling of 'success' and 'error' states).
  */
-
 function displayMessage(message, type) {
   messageContainer.textContent = message;
   messageContainer.className = type;
-  // ... your implementation here ...
 }
 
 /**
@@ -61,7 +80,6 @@ function displayMessage(message, type) {
 function isValidEmail(email) {
   const emailRegex = /\S+@\S+\.\S+/;
   return emailRegex.test(email);
-  // ... your implementation here ...
 }
 
 /**
@@ -76,7 +94,6 @@ function isValidEmail(email) {
  */
 function isValidPassword(password) {
   return password.length >= 8;
-  // ... your implementation here ...
 }
 
 /**
@@ -95,6 +112,7 @@ function isValidPassword(password) {
  */
 function handleLogin(event) {
   event.preventDefault();
+
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
 
@@ -102,40 +120,38 @@ function handleLogin(event) {
     displayMessage("Invalid email format.", "error");
     return;
   }
+
   if (!isValidPassword(password)) {
     displayMessage("Password must be at least 8 characters.", "error");
     return;
   }
+
   fetch("../auth/api/index.php", {
     method: "POST",
-
     headers: { "Content-Type": "application/json" },
-
     body: JSON.stringify({
       email: email,
-
       password: password,
     }),
   })
     .then((response) => response.json())
-
     .then((data) => {
       if (data.success) {
         displayMessage("Login successful!", "success");
 
-        // Save user credentials and role to localStorage
-        localStorage.setItem('user_id', data.user.id);
-        localStorage.setItem('user_name', data.user.name);
-        localStorage.setItem('user_email', data.user.email);
-        localStorage.setItem('is_admin', data.user.is_admin ? '1' : '0');
-        localStorage.setItem('role', data.user.is_admin ? 'admin' : 'student');
-        localStorage.setItem('logged_in', 'true');
+        localStorage.setItem("user_id", data.user.id);
+        localStorage.setItem("user_name", data.user.name);
+        localStorage.setItem("user_email", data.user.email);
+        localStorage.setItem("is_admin", data.user.is_admin ? "1" : "0");
+        localStorage.setItem(
+          "role",
+          data.user.is_admin ? "admin" : "student"
+        );
+        localStorage.setItem("logged_in", "true");
 
         emailInput.value = "";
-
         passwordInput.value = "";
         
-        // Redirect to home page after successful login
         setTimeout(() => {
           window.location.href = "../../index.html";
         }, 1000);
@@ -143,8 +159,7 @@ function handleLogin(event) {
         displayMessage(data.message, "error");
       }
     })
-
-    .catch((error) => {
+    .catch(() => {
       displayMessage("Error connecting to server.", "error");
     });
 }
