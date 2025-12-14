@@ -11,7 +11,7 @@
 
 ## A table indicating which student was responsible for which task.
 ## Maryam Qassim Mohamed 202306492 - Task 1: Homepage, Admin Portal & User Management
-## Fatima Ebrahim A.jabbar 202307826 : Assignments
+## Fatima Ebrahim A.jabbar 202307826 - Task 4: Assignments
 ## Zahraa Majeed Abdulhameed 202309381 :  Task 5 (Discussion)
 
 <<<<<<< HEAD 
