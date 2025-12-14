@@ -49,19 +49,26 @@
 // Allow cross-origin requests (CORS) if needed
 // Allow specific HTTP methods (GET, POST, PUT, DELETE, OPTIONS)
 // Allow specific headers (Content-Type, Authorization)
-
-  header("Content-Type: application/json");
-  header("Access-Control-Allow-Origin: *");
-  header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-  header("Access-Control-Allow-Headers: Content-Type, Authorization");
+  session_start();
+  $_SESSION['user_id'] = 'student';
+  $_SESSION['username'] = 'Student';
 
 // TODO: Handle preflight OPTIONS request
 // If the request method is OPTIONS, return 200 status and exit
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+      header("Content-Type: application/json");
+      header("Access-Control-Allow-Origin: *");
+      header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+      header("Access-Control-Allow-Headers: Content-Type, Authorization");
     http_response_code(200);
     exit();
 }
+// TODO: Set headers for JSON response and CORS
+header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // TODO: Include the database connection class
 // Assume the Database class has a method getConnection() that returns a PDO instance
@@ -248,6 +255,8 @@ function createTopic($db, $data) {
     // Check if topic_id, subject, message, and author are provided
     // If any required field is missing, return error with 400 status
         $requiredFields = ['topic_id', 'subject', 'message', 'author'];
+            $author = $_SESSION['username'] ?? $data['author'] ?? 'Student';
+             $data['author'] = $author;
          foreach ($requiredFields as $field) {
         if (empty($data[$field])) {
             echo json_encode([
@@ -454,7 +463,8 @@ function deleteTopic($db, $topicId) {
         'message' => 'Topic ID is required'
     ]);
     http_response_code(400);
-    exit();}
+    exit();
+    }
 
     
     // TODO: Check if topic exists
@@ -697,7 +707,7 @@ function deleteReply($db, $replyId) {
     // TODO: Check if reply exists
     // Prepare and execute SELECT query
     // If not found, return error with 404 status
-    $stmtCheck = $db->prepare("SELECT  reply_id  FROM replies WHERE  reply_id  = :reply_id ");
+    $stmtCheck = $db->prepare("SELECT reply_id FROM replies WHERE reply_id = :reply_id");
     $stmtCheck->bindValue(':reply_id', $replyId);
     $stmtCheck->execute();
     $reply = $stmtCheck->fetch(PDO::FETCH_ASSOC);
@@ -818,7 +828,7 @@ try {
         }
     // TODO: For DELETE requests, get id from query parameter or request body
         if ($method === 'DELETE') {
-            $replyId = $_GET['reply_id'] ?? ($input['reply_id'] ?? null);
+    $replyId = $_GET['id'] ?? $_GET['reply_id'] ?? ($input['id'] ?? $input['reply_id'] ?? null);
             if (!$replyId) {
                 http_response_code(400);
                 echo json_encode([
