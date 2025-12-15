@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Admin Portal</title>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Admin Portal</title>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@latest/css/pico.classless.min.css">
-<link rel="stylesheet" href="../../style.css">
-
-<script src="manage_users.js" defer></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@latest/css/pico.classless.min.css">
+  <link rel="stylesheet" href="../../style.css">
+ 
+ <script src="manage_users.js" defer></script>
 </head>
 <body>
 
@@ -17,78 +17,78 @@
   <p><a href="../../index.html">← Back to Home</a></p>
 </header>
 
-<main>
+ <main>
 
-<!-- Section 1: Password -->
-<section id="password-management">
-<h2>Change Your Password</h2>
+   <!-- Section 1: Password -->
+   <section id="password-management">
+     <h2>Change Your Password</h2>
 
-<form id="password-form" action="#" method="post">
-<fieldset>
-<legend>Password Update</legend>
+     <form id="password-form" action="#" method="post">
+       <fieldset>
+         <legend>Password Update</legend>
 
-<label for="current-password">Current Password:</label>
-<input type="password" id="current-password" required />
+         <label for="current-password">Current Password:</label>
+         <input type="password" id="current-password" required />
 
-<label for="new-password">New Password:</label>
-<input type="password" id="new-password" minlength="8" required />
+         <label for="new-password">New Password:</label>
+         <input type="password" id="new-password" minlength="8" required />
 
-<label for="confirm-password">Confirm New Password:</label>
-<input type="password" id="confirm-password" required />
+         <label for="confirm-password">Confirm New Password:</label>
+         <input type="password" id="confirm-password" required />
 
-<button type="submit" id="change">Update Password</button>
-</fieldset>
-</form>
-</section>
+         <button type="submit" id="change">Update Password</button>
+       </fieldset>
+     </form>
+   </section>
 
-<!-- Section 2: Students -->
-<section id="student-management">
-<h2>Manage Students</h2>
+   <!-- Section 2: Students -->
+   <section id="student-management">
+     <h2>Manage Students</h2>
 
-<details>
-<summary>Add New Student</summary>
+     <details>
+       <summary>Add New Student</summary>
 
-<form id="add-student-form" action="#" method="post">
-<fieldset>
-<legend>New Student Information</legend>
+       <form id="add-student-form" action="#" method="post">
+         <fieldset>
+           <legend>New Student Information</legend>
 
-<label for="student-name">Full Name:</label>
-<input type="text" id="student-name" required />
+           <label for="student-name">Full Name:</label>
+           <input type="text" id="student-name" required />
 
 
-<label for="student-email">Email:</label>
-<input type="email" id="student-email" required />
+           <label for="student-email">Email:</label>
+           <input type="email" id="student-email" required />
 
-<label for="default-password">Default Password:</label>
-<input type="text" id="default-password" value="password123" />
+           <label for="default-password">Default Password:</label>
+           <input type="text" id="default-password" value="password123" />
 
-<button type="submit" id="add">Add Student</button>
-</fieldset>
-</form>
-</details>
+           <button type="submit" id="add">Add Student</button>
+         </fieldset>
+       </form>
+     </details>
 
-<h3>Registered Students</h3>
+     <h3>Registered Students</h3>
 
-<label for="search-input">Search by name:</label>
-<input type="text" id="search-input" placeholder="Search students..." />
+     <label for="search-input">Search by name:</label>
+     <input type="text" id="search-input" placeholder="Search students..." />
 
-<table id="student-table">
-<thead>
-<tr>
+     <table id="student-table">
+       <thead>
+         <tr>
           <th>Name</th>
           <th>ID</th>
           <th>Email</th>
           <th>Actions</th>
-</tr>
-</thead>
-<tbody>
+         </tr>
+       </thead>
+       <tbody>
+    
+       </tbody>
+     </table>
 
-</tbody>
-</table>
+   </section>
 
-</section>
-
-</main>
+ </main>
 
 </body>
 </html>
