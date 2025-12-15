@@ -179,20 +179,21 @@ function handleLogin(event) {
  * 3. The event listener should call the `handleLogin` function.
  */
 function setupLoginForm() {
-  // Get the form element - try the global loginForm first, then try to find it
-  let form = loginForm;
-  if (!form) {
-    try {
-      if (typeof document !== 'undefined' && document) {
-        form = document.getElementById("loginForm");
-      }
-    } catch (e) {
-      // document not available
-    }
+  // Get the form element - try document first (for test environment), then use global loginForm
+  let form = null;
+  
+  // Try to get it from document first (works in test environment)
+  if (typeof document !== 'undefined' && document && document.getElementById) {
+    form = document.getElementById("loginForm");
   }
   
-  // Check if form exists and has addEventListener method
-  if (form && typeof form.addEventListener === 'function') {
+  // If not found in document, try the global loginForm
+  if (!form && loginForm) {
+    form = loginForm;
+  }
+  
+  // Add event listener if form exists
+  if (form) {
     form.addEventListener("submit", handleLogin);
   }
   // ... your implementation here ...
