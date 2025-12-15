@@ -226,7 +226,7 @@ async function handleChangePassword(event) {
 }
 
 // --- Search and Sort ---
-function handleSearch() {
+function handleSearch(event) {
   const term = searchInput.value.toLowerCase();
   if (!term) {
     renderTable(students);
@@ -375,6 +375,28 @@ async function checkAdminAccess() {
   return true;
 }
 
+// --- Load Students and Initialize ---
+async function loadStudentsAndInitialize() {
+  await loadStudents();
+
+  // Initialize event listeners
+  if (addStudentForm) {
+    addStudentForm.addEventListener("submit", handleAddStudent);
+  }
+  if (changePasswordForm) {
+    changePasswordForm.addEventListener("submit", handleChangePassword);
+  }
+  if (studentTableBody) {
+    studentTableBody.addEventListener("click", handleTableClick);
+  }
+  if (searchInput) {
+    searchInput.addEventListener("input", handleSearch);
+  }
+  if (tableHeaders && tableHeaders.length > 0) {
+    tableHeaders.forEach(th => th.addEventListener("click", handleSort));
+  }
+}
+
 // --- Initialize ---
 async function initialize() {
   // Check admin access first
@@ -383,12 +405,7 @@ async function initialize() {
     return; // Stop initialization if not admin
   }
 
-  addStudentForm.addEventListener("submit", handleAddStudent);
-  changePasswordForm.addEventListener("submit", handleChangePassword);
-  studentTableBody.addEventListener("click", handleTableClick);
-  searchInput.addEventListener("input", handleSearch);
-  tableHeaders.forEach(th => th.addEventListener("click", handleSort));
-  loadStudents();
+  await loadStudentsAndInitialize();
 }
 
 // Wait for DOM to be ready
