@@ -133,10 +133,10 @@ async function handleTableClick(event) {
 
     const newName = prompt("Enter new name:", student.name);
     if (newName === null) return; // User cancelled
-
+    
     const newEmail = prompt("Enter new email:", student.email);
     if (newEmail === null) return; // User cancelled
-
+    
     if (!newName.trim() && !newEmail.trim()) {
       alert("Please provide at least a name or email to update.");
       return;
@@ -192,7 +192,7 @@ async function handleChangePassword(event) {
   } catch (e) {
     // localStorage not available
   }
-
+  
   if (!userId) {
     try {
       if (typeof window !== 'undefined' && window && window.location) {
@@ -226,7 +226,7 @@ async function handleChangePassword(event) {
 }
 
 // --- Search and Sort ---
-function handleSearch(event) {
+function handleSearch() {
   const term = searchInput.value.toLowerCase();
   if (!term) {
     renderTable(students);
@@ -261,7 +261,7 @@ async function checkAdminAccess() {
   // Check localStorage only if available (browser environment)
   let isAdminLocal = false;
   let loggedInLocal = false;
-
+  
   // Safely check for localStorage
   let hasLocalStorage = false;
   try {
@@ -269,7 +269,7 @@ async function checkAdminAccess() {
   } catch (e) {
     hasLocalStorage = false;
   }
-
+  
   if (hasLocalStorage) {
     try {
       // First check localStorage as a quick check
@@ -281,7 +281,7 @@ async function checkAdminAccess() {
       loggedInLocal = false;
     }
   }
-
+  
   if (loggedInLocal === false) {
     try {
       if (typeof window !== 'undefined' && window && window.location) {
@@ -293,7 +293,7 @@ async function checkAdminAccess() {
     }
     return false;
   }
-
+  
   if (isAdminLocal === false) {
     try {
       if (typeof window !== 'undefined' && window && window.location) {
@@ -305,14 +305,14 @@ async function checkAdminAccess() {
     }
     return false;
   }
-
+  
   // Then verify with server (only if fetch is available)
   if (typeof fetch !== 'undefined') {
     try {
       const response = await fetch("api/check-admin.php", {
         credentials: 'include' // Include cookies/session
       });
-
+      
       if (!response.ok) {
         const errorText = await response.text();
         console.error("HTTP error response:", response.status, errorText);
@@ -323,9 +323,9 @@ async function checkAdminAccess() {
         }
         return false;
       }
-
+      
       const result = await response.json();
-
+      
       // Log debug info if available
       if (result.debug) {
         console.log("Debug info:", result.debug);
@@ -353,7 +353,7 @@ async function checkAdminAccess() {
       return false;
     }
   }
-
+  
   // If fetch is not available (test environment), return true if localStorage indicates admin
   let hasLocalStorageCheck = false;
   try {
@@ -361,7 +361,7 @@ async function checkAdminAccess() {
   } catch (e) {
     hasLocalStorageCheck = false;
   }
-
+  
   if (hasLocalStorageCheck) {
     try {
       const isAdminLocalCheck = localStorage.getItem('is_admin') === '1';
@@ -370,31 +370,9 @@ async function checkAdminAccess() {
       // localStorage not available
     }
   }
-
+  
   // Default: allow access in test environment
   return true;
-}
-
-// --- Load Students and Initialize ---
-async function loadStudentsAndInitialize() {
-  await loadStudents();
-
-  // Initialize event listeners
-  if (addStudentForm) {
-    addStudentForm.addEventListener("submit", handleAddStudent);
-  }
-  if (changePasswordForm) {
-    changePasswordForm.addEventListener("submit", handleChangePassword);
-  }
-  if (studentTableBody) {
-    studentTableBody.addEventListener("click", handleTableClick);
-  }
-  if (searchInput) {
-    searchInput.addEventListener("input", handleSearch);
-  }
-  if (tableHeaders && tableHeaders.length > 0) {
-    tableHeaders.forEach(th => th.addEventListener("click", handleSort));
-  }
 }
 
 // --- Initialize ---
@@ -405,7 +383,12 @@ async function initialize() {
     return; // Stop initialization if not admin
   }
 
-  await loadStudentsAndInitialize();
+  addStudentForm.addEventListener("submit", handleAddStudent);
+  changePasswordForm.addEventListener("submit", handleChangePassword);
+  studentTableBody.addEventListener("click", handleTableClick);
+  searchInput.addEventListener("input", handleSearch);
+  tableHeaders.forEach(th => th.addEventListener("click", handleSort));
+  loadStudents();
 }
 
 // Wait for DOM to be ready
