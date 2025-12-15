@@ -4,12 +4,12 @@
   Instructions:
   1. Link this file to your HTML using a <script> tag with the 'defer' attribute.
      Example: <script src="login.js" defer></script>
-
+  
   2. In your login.html, add a <div> element *after* the </fieldset> but
      *before* the </form> closing tag. Give it an id="message-container".
      This div will be used to display success or error messages.
      Example: <div id="message-container"></div>
-
+  
   3. Implement the JavaScript functionality as described in the TODO comments.
 */
 
@@ -106,10 +106,10 @@ function handleLogin(event) {
     displayMessage("Password must be at least 8 characters.", "error");
     return;
   }
-
+  
   // For test environment - check if we're in Node.js/Jest
   const isTestEnvironment = typeof process !== 'undefined' && process.versions && process.versions.node;
-
+  
   if (!isTestEnvironment) {
     // Browser environment - use fetch
     try {
@@ -142,7 +142,7 @@ function handleLogin(event) {
 
             if (emailInput) emailInput.value = "";
             if (passwordInput) passwordInput.value = "";
-
+            
             // Redirect to home page after successful login
             try {
               if (typeof window !== 'undefined' && window && window.location) {
@@ -179,9 +179,21 @@ function handleLogin(event) {
  * 3. The event listener should call the `handleLogin` function.
  */
 function setupLoginForm() {
-  // Check if loginForm exists
-  if (loginForm) {
-    loginForm.addEventListener("submit", handleLogin);
+  // Get the form element - try the global loginForm first, then try to find it
+  let form = loginForm;
+  if (!form) {
+    try {
+      if (typeof document !== 'undefined' && document) {
+        form = document.getElementById("loginForm");
+      }
+    } catch (e) {
+      // document not available
+    }
+  }
+  
+  // Check if form exists and has addEventListener method
+  if (form && typeof form.addEventListener === 'function') {
+    form.addEventListener("submit", handleLogin);
   }
   // ... your implementation here ...
 }
